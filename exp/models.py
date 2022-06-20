@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# Managers
+
+
+
 # Create your models here.
 
 class Project(models.Model):
@@ -31,7 +35,15 @@ class ExpPlatform(models.Model):
         return f'{self.title}-{self.n_reads}-{self.length_libtype}'
 
 
+class Organism:
+    pass
+
+class OrganismDescriptor(models.Model):
+    pass 
+
+
 class ModelOrganism(models.Model):
+
     
     def __str__(self):
         return f'{self.id}'
