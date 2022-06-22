@@ -1,0 +1,23 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .experiment-wrapper{
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+    }
+</style>
+
+
+<div class="experiment-wrapper">
+    <div class="exp-description">
+        <h3>Experiment-description</h3>
+        <p>{{exp}}</p>
+    </div>
+    <div class="exp-stat">
+        <h3>Experiment Statistics</h3>
+    </div>
+</div>
+
+{% endblock content %}
