@@ -5,5 +5,6 @@ urlpatterns = [
     path('', views.home, name='exp-home'),
     path('all', views.allExperiments, name='exp-all'),
     path('<int:pk>', views.singeExperiment, name='exp-single'),
+    path('create-organism', views.createOrganism, name='create-organism'),
     
 ]

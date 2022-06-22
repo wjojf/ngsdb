@@ -160,7 +160,7 @@ class DescriptorMap(models.Model):
     desc_name = models.ForeignKey(Descriptor, db_index=True,
                                   on_delete=models.CASCADE)
     content_type = models.ForeignKey(
-        ContentType, verbose_name='museum item', db_index=True, on_delete=models.CASCADE)
+        ContentType, verbose_name='model', db_index=True, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField(db_index=True)
     object = GenericForeignKey('content_type', 'object_id')
 

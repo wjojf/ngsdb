@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="exp-wrapper">
+<p>All Experiments</p>
 {% for exp in experiments %}
     <div class="experiment">
         <a href="{% url 'singleExperiment' exp.id%}">{{exp}}</a> 
