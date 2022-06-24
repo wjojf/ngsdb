@@ -181,6 +181,13 @@ class ModelOrganism(models.Model):
         return f'{self.name}'
 
 
+class ExpConditions(models.Model):
+    custom_fields = GenericRelation(DescriptorMap)
+
+    def __str__(self):
+        return f'Conditions Set # {self.id}'
+
+
 #####################
 #   Final Model     #
 #####################
@@ -193,7 +200,7 @@ class Experiment(models.Model):
     users = models.ManyToManyField(User,blank=True)
     organism = models.ForeignKey(ModelOrganism, null=True, on_delete=models.SET_NULL)
     prep_method = models.ForeignKey(PrepMethod, null=True, on_delete=models.SET_NULL)
-    #conditions = {} # how to handle conditions?
+    conditions = models.ForeignKey(ExpConditions, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return f'Exp {self.id} \n {self.data_filepath}'
