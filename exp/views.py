@@ -30,7 +30,7 @@ def singeExperiment(request, pk):
     return render(request, 'exp/singleExperiment.html', context) 
 
 
-def createOrganism(request):
+def updateOrganism(request):
     
     if request.method == 'POST':
         print(request.POST)
@@ -43,4 +43,4 @@ def createOrganism(request):
     
     form = DescriptorMapInline()
     context = {'form': form}
-    return render(request, 'exp/createOrganism.html', context)
+    return render(request, 'exp/updateOrganism.html', context)
