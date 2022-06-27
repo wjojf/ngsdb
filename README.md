@@ -1,0 +1,3 @@
+# ngsdb
+
+NGS experiments aggregator.
