@@ -1,0 +1,10 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="plots-container">
+    <ul class="plots-list">
+        <li><a href="{% url 'test-volcano'%}">Volcano Plot</a></li>
+        <li><a href="{% url 'test-pcaplot'%}">PCA Plot</a></li>
+    </ul>
+</div>
+{% endblock content %}
