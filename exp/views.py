@@ -7,7 +7,7 @@ from exp.forms import DescriptorMapInline
 
 # Create your views here.
 class HomeView(TemplateView):
-    template_name = 'main.html'
+    template_name = 'exp/exp-home.html'
 
 
 class ExperimentsView(ListView):

@@ -1,5 +1,5 @@
 <div class="navbar">
-    <a href="{% url 'exp-home' %}}">LOGO</a>
+    <a href="{% url 'home' %}">LOGO</a>
     {% if request.user.is_authenticated%}
         <small>Hello, {{request.user.username}}</small>
     {% else %}
