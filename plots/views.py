@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 
 
 class PlotsNavgitaionView(TemplateView):
-    template_name = 'plots/plots.html'
+    template_name = 'plots/test-plots.html'
 
 
 class PlotView(TemplateView):
@@ -78,6 +78,7 @@ class VolcanoPlotView(DetailView):
             df,
             x='log2FoldChange',
             y='-log10p',
+            hover_data=['Gene'],
             title=f'Volcano Plot {self.get_object()}'
         )
 
