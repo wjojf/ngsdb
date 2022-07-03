@@ -1,8 +1,11 @@
+from cmath import exp
 import os
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 from ngsdb.settings import STATIC_URL
+from exp.models import Experiment
 
 # Visual imports
+import numpy as np
 import pandas as pd
 import dash_bio
 import plotly.express as px
@@ -17,15 +20,13 @@ class PlotView(TemplateView):
     template_name = 'plots/plot.html'
 
 
-class VolcanoPlotView(PlotView):
+class TestVolcanoPlotView(PlotView):
 
     def get_context_data(self, **kwargs):
-        context = super(VolcanoPlotView, self).get_context_data(**kwargs)        
-        df  = pd.read_csv(os.path.join(STATIC_URL, 'csv/volcano_data1.csv'))
-        
+        context = super(TestVolcanoPlotView, self).get_context_data(**kwargs)        
+        df = pd.read_csv('https://git.io/volcano_data1.csv')
         figure = dash_bio.VolcanoPlot(
             dataframe=df,
-            point_size=10,
             effect_size_line_width=4,
             genomewideline_width=2
         )
@@ -34,10 +35,10 @@ class VolcanoPlotView(PlotView):
         return context
     
 
-class PCAPlotView(PlotView):
+class TestPCAPlotView(PlotView):
     
     def get_context_data(self, **kwargs):
-        context = super(PCAPlotView, self).get_context_data(**kwargs)
+        context = super(TestPCAPlotView, self).get_context_data(**kwargs)
 
         df = px.data.iris()
         features = ["sepal_width", "sepal_length", "petal_width", "petal_length"]
@@ -58,4 +59,28 @@ class PCAPlotView(PlotView):
 
         context['graph'] = fig.to_html()
         return context    
+
+
+class VolcanoPlotView(DetailView):
+    pk_url_kwarg = 'exp_id'
+    model = Experiment
+    context_object_name = 'exp'
+    template_name = 'plots/plot.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        data_filepath = self.get_object().data_filepath
+        df = pd.read_csv(os.path.join(STATIC_URL, data_filepath))
+        df['-log10p'] = df['pvalue'].apply(lambda x: -np.log10(x))
+
+        figure = px.scatter(
+            df,
+            x='log2FoldChange',
+            y='-log10p',
+            title=f'Volcano Plot {self.get_object()}'
+        )
+
+        context['graph'] = figure.to_html()
+        return context
 
