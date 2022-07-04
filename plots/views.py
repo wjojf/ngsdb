@@ -1,6 +1,5 @@
-from cmath import exp
 import os
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, DetailView
 from ngsdb.settings import STATIC_URL
 from exp.models import Experiment
 
@@ -79,7 +78,7 @@ class VolcanoPlotView(DetailView):
             x='log2FoldChange',
             y='-log10p',
             hover_data=['Gene'],
-            title=f'Volcano Plot {self.get_object()}'
+            title=f'{self.get_object()}'
         )
 
         context['graph'] = figure.to_html()
