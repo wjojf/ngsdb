@@ -1,5 +1,6 @@
 import os
 from django.views.generic import TemplateView, DetailView
+from matplotlib.pyplot import title
 from ngsdb.settings import STATIC_URL
 from exp.models import Experiment
 
@@ -77,7 +78,8 @@ class VolcanoPlotView(DetailView):
             effect_size='log2FoldChange',
             p='pvalue',
             snp=None,
-            gene='Gene'
+            gene='Gene',
+            title=f'{self.get_object()}'
         )
 
         context['graph'] = figure.to_html()
