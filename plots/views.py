@@ -70,15 +70,14 @@ class VolcanoPlotView(DetailView):
         context = super().get_context_data(**kwargs)
 
         data_filepath = self.get_object().data_filepath
-        df = pd.read_csv(os.path.join(STATIC_URL, data_filepath))
-        df['-log10p'] = df['pvalue'].apply(lambda x: -np.log10(x))
+        df = pd.read_csv(os.path.join(STATIC_URL, data_filepath)).dropna()
 
-        figure = px.scatter(
-            df,
-            x='log2FoldChange',
-            y='-log10p',
-            hover_data=['Gene'],
-            title=f'{self.get_object()}'
+        figure = dash_bio.VolcanoPlot(
+            dataframe=df,
+            effect_size='log2FoldChange',
+            p='pvalue',
+            snp=None,
+            gene='Gene'
         )
 
         context['graph'] = figure.to_html()
