@@ -1,46 +1,53 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
+from django.views.generic import ListView, DetailView, TemplateView, FormView
 from exp.models import Experiment
-from exp.forms import ModelOrganismForm, DescriptorMapInline
+from exp.forms import DescriptorMapInline
 
 
 # Create your views here.
-def home(request):
-    return render(request, 'main.html')
+class HomeView(TemplateView):
+    template_name = 'exp/exp-home.html'
 
 
-def allExperiments(request):
+class ExperimentsView(ListView):
+    model = Experiment
+    context_object_name = 'experiments'
+    template_name = 'exp/allExperiments.html'
     
-    experiments = Experiment.objects.all()
     
-    context = {'experiments': experiments}
-
-    return render(request, 'exp/allExperiments.html', context)
-
-
-def singeExperiment(request, pk):
-    
-    try:
-        experiment = Experiment.objects.get(id=pk)
-    except:
-        return redirect('exp-home')
-    
-    context = {'experiment': experiment}
-    
-    return render(request, 'exp/singleExperiment.html', context) 
+class ExperimentView(DetailView):
+    model = Experiment
+    pk_url_kwarg = 'exp_id'
+    context_object_name = 'exp'
+    template_name = 'exp/singleExperiment.html'    
 
 
-def createOrganism(request):
+class DescriptorMapFormView(FormView):
+    template_name = 'exp/createDescriptor.html'
+    form_class = DescriptorMapInline
+    success_url = 'exp-all'
+
     
-    if request.method == 'POST':
-        print(request.POST)
-        form = DescriptorMapInline(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('exp-all')
-        else:
-            return HttpResponse('An Error ocurred:(')
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
     
-    form = DescriptorMapInline()
-    context = {'form': form}
-    return render(request, 'exp/createOrganism.html', context)
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+    def get(self, request):
+        return render(request, self.template_name, self.get_context_data(form=self.form_class))
+
+    def post(self, request):
+        #print(request.POST)
+        form = self.form_class(request.POST)
+        
+        if self.form_valid(form):
+            try:
+                form.save()
+                return redirect(self.success_url)
+            except Exception as e: 
+                return HttpResponse(e)
+        
+        return HttpResponse('An Error ocurred:(')
+

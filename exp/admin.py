@@ -13,4 +13,5 @@ admin.site.register(exp_models.ModelOrganism)
 
 
 admin.site.register(exp_models.ExpPlatform)
+admin.site.register(exp_models.ExpConditions)
 

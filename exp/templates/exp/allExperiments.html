@@ -6,7 +6,7 @@
 <p>All Experiments</p>
 {% for exp in experiments %}
     <div class="experiment">
-        <a href="{% url 'singleExperiment' exp.id%}">{{exp}}</a> 
+        <a href="{% url 'exp-single' exp.id%}">{{exp}}</a> 
     </div>
 {% endfor %}
 </div>
