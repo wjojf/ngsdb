@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load common_tags %}
+{% block navigation %}
+    {% include "includes/navbar.html" %}
+{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        {% block navtabs %}
+            <ul class="nav nav-tabs">
+                {% render_tabs %}
+            </ul>
+        {% endblock %}
+        {% block filters %}
+            {% if form %}
+                <form class="search-form" action="." method="GET">
+                    <div class="row">
+                        {% for field in form %}{{ field }} {% endfor %}
+                        <div class="col-xs-2">
+                            <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
+                            <button type="submit" class="btn" value="_clear" name="_clear">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            {% endif %}
+        {% endblock %}
+        {% block list_body %}{% endblock %}
+        {% include 'pagination/pagination.html' %}
+    </div>
+{% endblock %}
