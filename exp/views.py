@@ -7,13 +7,13 @@ from exp.forms import DescriptorMapInline
 
 # Create your views here.
 class HomeView(TemplateView):
-    template_name = 'exp/exp-home.html'
+    template_name = 'start.html'
 
 
 class ExperimentsView(ListView):
     model = Experiment
     context_object_name = 'experiments'
-    template_name = 'exp/allExperiments.html'
+    template_name = 'exp/home.html'
     
     
 class ExperimentView(DetailView):

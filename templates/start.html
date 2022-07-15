@@ -1,48 +1,12 @@
 {% extends "base.html" %}
-{% block title %}{{ branding }} - orders{% endblock %}
+{% block title %}{{ branding }} - NGSDB{% endblock %}
 {% block navigation %}
-    {% include "orders/includes/navbar.html" %}
+    {% include "includes/navbar.html" %}
 {% endblock %}
 {% block content %}
-    {% if user.is_authenticated %}
         <div class="jumbotron">
-            <h1><a href="{% url 'orders_view' %}">Lab Orders</a></h1>
-            <p>Place, review, and check orders by you and by other lab members</p>
+            <h1><a href="{% url 'exp-all' %}">Browse experiments</a></h1>
+            <p>Browse and search experiments and associated analyses where
+            available</p>
         </div>
-
-        <div class="jumbotron">
-            <h1><a href="{% url 'chem_reagent_list' %}">Inventory</a></h1>
-            <p>Chemicals inventory</p>
-        </div>
-    
-        <div class="jumbotron">
-            <h1><a href="{% url 'museum_home_view' %}">Lab Museum</a></h1>
-            <p>A collection of laboratory samples. This includes personal as well as common stuff.</p>
-        </div>
-        
-        <div class="jumbotron">
-            <h1><a href="{% url 'radio_current_vials_view' %}">Radioactive reagent tracker</a></h1>
-            <p>Track the availability of radiolabeled reagents in the lab</p>
-        </div>
-    
-        <div class="jumbotron">
-            <h1><a href="{% url 'ecoli_home_view' %}">E. coli knockout collection</a></h1>
-            <p>Collection of all E.coli protein gene knockouts.</p>
-        </div>
-        
-        <div class="jumbotron">
-            <h1><a href="{% url 'nlp_home_view' %}">Protocol collection (testing)</a></h1>
-            <p>Collection of protocols.</p>
-        </div>
-        
-        <div class="jumbotron">
-            <h1><a href="{% url 'links_link_list_view' %}">Links to outside resources</a></h1>
-            <p>Links to outside serives such as lab equipment sign up sheets, facility work requests, etc.</p>
-        </div>
-    {% else %}
-        <div class="page-header">
-            <h1>Nudler Lab intranet <small>You must login to continue.</small></h1>
-        </div>
-    {% endif %}
-
 {% endblock %}

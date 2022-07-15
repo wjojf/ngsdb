@@ -1,6 +1,11 @@
-{% extends "strains/base.html" %}
-{% load orders_tags common_tags museum_tags %}
+{% extends "exp/base.html" %}
+{% load common_tags exp_tags %}
 {% block list_body %}
+    {% if not object_list %}
+        <div class="summary">
+            <h2>No experiments found!</h2>
+        </div>
+    {% endif %}
     {% for obj in object_list %}
     <div class="summary">
         <div class="info-badge">
