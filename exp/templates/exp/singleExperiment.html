@@ -21,10 +21,16 @@
 </div>
 
 <div class="plots-wrapper">
-    <ul>
-        <li><a href="{% url 'volcano-plot' exp.id %}">Volcano Plot</a></li>
-        <li><a href="">PCA Plot</a></li>
-    </ul>
+    <div class="volcano">
+        {% if volcanoPlot_div %}
+            {{volcanoPlot_div|safe}}
+        {% else %}
+        {% endif %}
+    </div>
+
+    <div class="pca">
+
+    </div>
 </div>
 
 {% endblock content %}

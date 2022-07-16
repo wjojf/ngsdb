@@ -10,6 +10,7 @@ import pandas as pd
 import dash_bio
 import plotly.express as px
 from sklearn.decomposition import PCA
+from .generate_plots import generate_volcanoPlot
 
 
 class PlotsNavgitaionView(TemplateView):
@@ -67,21 +68,13 @@ class VolcanoPlotView(DetailView):
     context_object_name = 'exp'
     template_name = 'plots/plot.html'
     
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        data_filepath = self.get_object().data_filepath
-        df = pd.read_csv(os.path.join(STATIC_URL, data_filepath)).dropna()
-
-        figure = dash_bio.VolcanoPlot(
-            dataframe=df,
-            effect_size='log2FoldChange',
-            p='pvalue',
-            snp=None,
-            gene='Gene',
-            title=f'{self.get_object()}'
-        )
-
-        context['graph'] = figure.to_html()
+        data_filepath = os.path.join(STATIC_URL, self.get_object().data_filepath)
+        volcano_div = generate_volcanoPlot(data_filepath)
+        
+        context['graph'] = volcano_div
         return context
 
