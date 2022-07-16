@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-f6*y-9*a0p!yon3&2)=n-+vrgot21+b#@1z+7$3!@23$mie#25
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+
+]
 
 
 # Application definition
@@ -84,10 +86,10 @@ WSGI_APPLICATION = 'ngsdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': "admin",
-        'HOST': 'localhost',
+        'NAME': 'ngsdb',
+        'USER': 'ngs_admin',
+        'PASSWORD': "ngs_password",
+        'HOST': '66.172.10.178',
         'PORT': '5432',
     }
 }
