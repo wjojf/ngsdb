@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+
 ########################
 #     Managers         #
 ########################
@@ -76,8 +77,6 @@ class DescriptorValueManager(models.Manager):
         ctype = ContentType.objects.get_for_model(obj)
         DescriptorMap._default_manager.get_or_create(
             desc_name=desc, desc_value=value, content_type=ctype, object_id=obj.pk)
-
-
 
 
 #####################

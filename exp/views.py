@@ -7,6 +7,7 @@ from exp.forms import DescriptorMapInline
 from plots.generate_plots import generate_volcanoPlot
 from ngsdb.settings import STATIC_URL
 
+
 # Create your views here.
 class HomeView(TemplateView):
     template_name = 'exp/exp-home.html'

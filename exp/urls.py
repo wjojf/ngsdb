@@ -1,6 +1,7 @@
 from django.urls import path
 from exp import views 
 
+
 urlpatterns = [
     path('', views.HomeView.as_view(), name='exp-home'),
     path('all', views.ExperimentsView.as_view(), name='exp-all'),
