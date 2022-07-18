@@ -110,6 +110,7 @@ class ExpPlatform(models.Model):
     def __str__(self):
         return f'{self.title}-{self.n_reads}-{self.length_libtype}'
 
+
 ##############################
 #   EAV for ModelOrganism    #
 ##############################
@@ -172,6 +173,7 @@ class DescriptorMap(models.Model):
     def __str__(self):
         return u'[%s]: = %s' % (self.desc_name, self.desc_value)
 
+
 class ModelOrganism(models.Model):
     name = models.CharField(max_length=200)
     custom_fields = GenericRelation(DescriptorMap)
@@ -192,8 +194,16 @@ class ExpConditions(models.Model):
 #####################
 
 
+def experiment_data_filepath(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/fileformat
+    file_format = filename.split('.')[-1]
+    return f'{file_format}/{filename}'
+
+
 class Experiment(models.Model):
-    data_filepath = models.CharField(max_length=250)
+    
+    data_filepath = models.FileField(upload_to=experiment_data_filepath)
+    
     project = models.ForeignKey(Project, null=True ,on_delete=models.SET_NULL) 
     platform = models.ForeignKey(ExpPlatform, null=True, on_delete=models.SET_NULL)
     users = models.ManyToManyField(User,blank=True)
