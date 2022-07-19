@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import BaseModelFormSet
-from exp.models import ModelOrganism, Descriptor, DescriptorMap, DescriptorValue
+from exp.models import ModelOrganism, Descriptor, DescriptorMap, DescriptorValue, Experiment
 
 
 class PkToValueField(forms.CharField):
