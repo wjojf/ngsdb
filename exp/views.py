@@ -28,7 +28,7 @@ class ExperimentView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        data_filepath = os.path.join(STATIC_URL, self.get_object().data_filepath)
+        data_filepath = os.path.join(STATIC_URL, self.get_object().data_filepath.name)
         context['volcanoPlot_div'] = generate_volcanoPlot(data_filepath)
         
         return context

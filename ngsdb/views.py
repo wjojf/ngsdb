@@ -1,4 +1,3 @@
-from curses.ascii import US
 from django.views.generic import TemplateView, FormView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
