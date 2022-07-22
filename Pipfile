@@ -12,6 +12,7 @@ psycopg2 = "*"
 matplotlib = "*"
 pandas = "*"
 dash-bio = "*"
+"backports.zoneinfo" = "*"
 
 [dev-packages]
 

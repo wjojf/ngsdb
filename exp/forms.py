@@ -2,31 +2,39 @@ from django import forms
 from django.forms import ModelForm
 from django.forms.models import modelformset_factory, BaseModelFormSet
 
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet, generic_inlineformset_factory
 
 from nlib.forms import InlineInput, InlineSelect
+from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrganism, Descriptor, DescriptorMap, DescriptorValue
 
 class UploadForm(forms.Form):
     file = forms.FileField(label=u'File to import (.csv)')
-    author = forms.CharField(label=u'Person submitting items', max_length=30)
-    storage = forms.ModelMultipleChoiceField(label='Storage', queryset=Storage.objects.all())
+    project = forms.ModelChoiceField(label='Project',
+            queryset=Project.objects.all())
+    platform = forms.ModelChoiceField(label='Project',
+            queryset=ExpPlatform.objects.all())
+    prep_method = forms.ModelChoiceField(label='Preparation method',
+            queryset=PrepMethod.objects.all())
+    users = forms.ModelMultipleChoiceField(label='Users',
+            queryset=User.objects.all())
 
 class SearchForm(forms.Form):
     '''
     Search form for museum item list.
     '''
-    name = forms.CharField(max_length=250, required=False,
+    project = forms.CharField(max_length=250, required=False,
         widget=InlineInput(attrs={
             'css_class': 'col-xs-2',
-            'placeholder': 'item name...',}))
-    item_type = forms.CharField(max_length=50, required=False,
+            'placeholder': 'project ...',}))
+    platform = forms.CharField(max_length=50, required=False,
         widget=InlineInput(attrs={
             'css_class': 'col-xs-2',
-            'placeholder': 'item type...',}))
-    original_author = forms.CharField(max_length=50, required=False,
+            'placeholder': 'platform ...',}))
+    organism = forms.CharField(max_length=50, required=False,
         widget=InlineInput(attrs={
             'css_class': 'col-xs-2',
-            'placeholder': 'original author...',}))
+            'placeholder': 'organism ...',}))
     qfield = forms.ModelChoiceField(queryset=Descriptor.objects.all(),
         widget=InlineSelect(attrs={
             'css_class': 'col-xs-2',
@@ -47,17 +55,17 @@ class UpdateCustomForm(forms.Form):
 
 class UpdateCommonForm(forms.Form):
     '''
-    Field and value for bulk update MuseumItems from admin.
+    Field and value for bulk update Experiment from admin.
     '''
     field = forms.CharField(label=u'Field name', max_length=50)
     value = forms.CharField(label=u'New Value', max_length=255)
 
     def clean_field(self):
         '''
-        Checks that the given field exists in MuseumItem.
+        Checks that the given field exists in Experiment.
         '''
         field_name = self.cleaned_data['field'].replace(' ', '_')
-        model_fields = MuseumItem._meta.get_all_field_names()
+        model_fields = Experiment._meta.get_all_field_names()
         if field_name in model_fields:
             return field_name
         else:
@@ -65,7 +73,9 @@ class UpdateCommonForm(forms.Form):
 
     def clean(self):
         '''
-        If the field is MuseumItem.author, performs lookup in the owners
+        FIXME: Probably need a separate model for users, they are not
+        necessarily the same as auth.User
+        If the field is Experiment.author, performs lookup in the owners
         table for value and if found, returns its pk, so we can use it
         BulkUpdateView. Ugly, but working.
         '''
@@ -74,7 +84,7 @@ class UpdateCommonForm(forms.Form):
         if field_name == 'author':
             author_name = cleaned_data.get('value')
             try:
-                author = Owner.objects.get(name=author_name)
+                author = User.objects.get(name=author_name)
             except:
                 raise forms.ValidationError('Owner with name %s does not exist.' % author_name)
 
@@ -99,11 +109,6 @@ class PkToValueField(forms.CharField):
         except:
             return value
 
-class MuseumItemForm(ModelForm):
-
-    class Meta:
-        fields = '__all__'
-        model = MuseumItem
 
 class DescriptorMapInline(ModelForm):
     desc_value = PkToValueField(model=DescriptorValue, widget=forms.TextInput(attrs={'size':40,}))
@@ -212,63 +217,15 @@ class BaseUploadedFormSet(BaseModelFormSet):
                 inline.save(commit=commit)
 
 
-from django import forms
-from django.forms import ModelForm
-from django.forms.models import BaseModelFormSet
-from exp.models import ModelOrganism, Descriptor, DescriptorMap, DescriptorValue
-
-
-class PkToValueField(forms.CharField):
-    '''
-    Custom field used to render related objects in a textinput instead of select widget.
-    Given a model will try to fetch an object with the given pk and display it instead of pk.
-    Failing that, will simply display pk.
-    '''
-
-    def __init__(self, model=None, *args, **kwargs):
-        self.model = model
-        super(PkToValueField, self).__init__(*args, **kwargs)
-
-    def prepare_value(self, value):
-        if self.model == None:
-            return value
-        try:
-            return self.model._default_manager.get(pk=int(value))
-        except:
-            return value
-
-
 class ModelOrganismForm(ModelForm):
     
     class Meta:
         fields = '__all__'
         model = ModelOrganism
 
-
-class DescriptorMapInline(ModelForm):
-    desc_value = PkToValueField(
-        model=DescriptorValue, widget=forms.TextInput(attrs={'size': 40, }))
-    desc_name = PkToValueField(
-        model=Descriptor, widget=forms.TextInput(attrs={'size': 30, }))
+class ExpPlatformForm(ModelForm):
 
     class Meta:
         fields = '__all__'
-        model = DescriptorMap
+        model = ExpPlatform
 
-    def clean(self):
-        '''
-        Checks if the DescriptorValue of appropriate Descriptor exists
-        in database. If it doesn't, creates a new one.
-        '''
-        lookup_params = {}
-        name = self.cleaned_data['desc_name'].strip().lower()
-        value = self.cleaned_data['desc_value'].strip().lower()
-        lookup_params['value'] = value
-        lookup_params['descriptor'], created = Descriptor.objects.get_or_create(
-            name=name)
-        # This is probably not good. But it works.
-        # It would be more appropriate to create new FieldValue in manager.
-        self.cleaned_data['desc_name'] = lookup_params['descriptor']
-        val, created = DescriptorValue.objects.get_or_create(**lookup_params)
-        self.cleaned_data['desc_value'] = val
-        return self.cleaned_data

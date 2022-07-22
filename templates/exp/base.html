@@ -1,5 +1,6 @@
 {% extends "base_list.html" %}
+{% load static %}
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/strains.css" /> 
+<link rel="stylesheet" type="text/css" href="{% static 'css/strains.css' %}" /> 
 {% endblock %}
 {% block title %}{{ branding }} - NGSDB: Experiments{% endblock %}

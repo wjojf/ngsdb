@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
+        {% load static %}
         <title>{% block title %}{{ branding }}{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/bootstrap.css" /> 
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.min.css" /> 
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" /> 
+        <link rel="stylesheet" type="text/css" href="{% static 'css/theme.min.css' %}" /> 
         <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab" /> 
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/labd.css" /> 
-        <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.js"></script>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/labd.css' %}" /> 
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
         {% block extrastyle %}{% endblock %}
     </head>
 
@@ -48,7 +49,7 @@
                     </div>
                     {% if user %}
                         <div class="col-xs-6">
-                            <a href="{% url 'password_view' %}">Change password</a>
+                            <a href="#">Change password</a>
                         </div>
                     {% endif %}
                 </div>

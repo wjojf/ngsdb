@@ -390,7 +390,7 @@ class GenericInlineFormsetMixin(object):
             })
         return kwargs
 
-class AddMuseumItemView(edit.CreateView, GenericInlineFormsetMixin):
+class AddExperimentView(edit.CreateView, GenericInlineFormsetMixin):
 
     model = Experiment
     inline_form_class = DescriptorMapInline
@@ -446,7 +446,7 @@ class AddMuseumItemView(edit.CreateView, GenericInlineFormsetMixin):
         else:
             return self.form_invalid(form, formset)
 
-class UpdateMuseumItemView(edit.UpdateView, GenericInlineFormsetMixin):
+class UpdateExperimentView(edit.UpdateView, GenericInlineFormsetMixin):
 
     model = Experiment
     inline_form_class = DescriptorMapInline
