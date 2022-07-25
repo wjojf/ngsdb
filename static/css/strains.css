@@ -1,0 +1,12 @@
+.item-fieldset > strong {
+    padding: 0 15px 0 15px;
+}
+
+.item-details {
+    margin-left: 119px;
+    padding-top: 10px;
+}
+
+.row-descriptor {
+    margin-bottom: 10px;
+}

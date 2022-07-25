@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "*"
+djangorestframework = "*"
+plotly = "*"
+django-extensions = "*"
+psycopg2 = "*"
+matplotlib = "*"
+pandas = "*"
+dash-bio = "*"
+"backports.zoneinfo" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"

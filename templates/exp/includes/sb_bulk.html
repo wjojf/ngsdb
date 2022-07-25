@@ -1,0 +1,21 @@
+{% extends "strains/includes/sidebar.html" %}
+{% block search %}
+<div class="module">
+	<h2>BULK ACTION</h2>
+	<form id="bulk-action-form" action="." method="post">{% csrf_token %}
+		<ul class="form">
+			{{ form.as_ul }}
+		</ul>
+		{% for object in object_list %}
+			<input type="hidden" name="selected" value="{{ object.id }}">
+		{% endfor %}
+		<div class="submit-row">
+			<input type="submit" class="default" name="_update" value="Update">
+			<input type="submit" name="_clear" value="Clear">
+		</div>
+	</form>
+</div>
+{% endblock %}
+{% block browse_owner %}{% endblock %}
+{% block browse_storage %}{% endblock %}
+

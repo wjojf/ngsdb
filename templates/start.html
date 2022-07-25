@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ branding }} - NGSDB{% endblock %}
+{% block navigation %}
+    {% include "includes/navbar.html" %}
+{% endblock %}
+{% block content %}
+        <div class="jumbotron">
+            <h1><a href="{% url 'exp_home_view' %}">Browse experiments</a></h1>
+            <p>Browse and search experiments and associated analyses where
+            available</p>
+        </div>
+{% endblock %}

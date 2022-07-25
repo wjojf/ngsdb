@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        {% load static %}
+        <title>{% block title %}{{ branding }}{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}" /> 
+        <link rel="stylesheet" type="text/css" href="{% static 'css/theme.min.css' %}" /> 
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans|Roboto+Slab" /> 
+        <link rel="stylesheet" type="text/css" href="{% static 'css/labd.css' %}" /> 
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+        {% block extrastyle %}{% endblock %}
+    </head>
+
+    <body>
+        {% block navigation %}{% endblock %}
+        {% block breadcrumbs %}{% endblock %}
+        <!-- Container -->
+        <div class="container">
+            {% block messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <p class="info">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endblock %}
+            <!-- Content -->
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% endblock %}
+            <!-- END Content -->
+        </div>
+        <!-- END Container -->
+        <footer class="footer">
+            <div class="container">
+            {% block footer %}
+                <div class="row">
+                    <div class="col-xs-6">
+                        <dl class="dl-horizontal">
+                            <dt>&copy; {% now "Y" %}</dt><dd>Nudler Lab</dd>
+                            <dt>NGSDB</dt><dd>version 0.0.1</dd>
+                            <dt>powered by</dt>
+                                <dd>
+                                    <a href="https://www.djangoproject.com/">django, </a>
+                                    <a href="http://getbootstrap.com">bootstrap, </a> and mysql
+                                </dd>
+                        </dl>
+                    </div>
+                    {% if user %}
+                        <div class="col-xs-6">
+                            <a href="#">Change password</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endblock %}
+            </div>
+        </footer>
+        <!-- END footer -->
+    </body>
+</html>

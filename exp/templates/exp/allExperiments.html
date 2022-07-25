@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="exp-wrapper">
+<p>All Experiments</p>
+{% for exp in experiments %}
+    <div class="experiment">
+        <a href="{% url 'exp-single' exp.id%}">{{exp}}</a> 
+    </div>
+{% endfor %}
+</div>
+
+{% endblock content %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css" />
+{% endblock %}
+{% block content %}
+    {% if form.errors %}
+        <div class="alert alert-error">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <p class="error">Your username and password didn't match. Try again.</p>
+        </div>
+    {% endif %}
+
+    <div class="login">
+        <h3>Please login</h3>
+        <form class="form-horizontal" action="." method="post">{% csrf_token %}
+          <div class="control-group">
+            {{ form.username.errors }}
+            <label for="id_username" class="control-label required">Username</label>
+            <div class="controls">{{ form.username }}</div>
+          </div>
+          <div class="control-group">
+            {{ form.password.errors }}
+            <label for="id_password" class="control-label required">Password</label>
+            <div class="controls">{{ form.password }}</div>
+            <input type="hidden" name="this_is_the_login_form" value="1" />
+            <input type="hidden" name="next" value="{{ next }}" />
+          </div>
+          <div class="control-group">
+            <label class="control-label">&nbsp;</label>
+            <div class="control"><button class="btn btn-info" type="submit" value="login">Login</button></div>
+          </div>
+        </form>
+
+    </div>
+{% endblock %}
+{% block footer %}{% endblock %}

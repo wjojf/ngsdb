@@ -1,0 +1,39 @@
+{% extends "exp/home.html" %}
+{% load common_tags exp_tags %}
+{% block content %} 
+    <ul class="nav nav-tabs">
+        {% render_tabs %}
+        <li class="active"><a href="#">Upload .csv file</a></li>
+    </ul>
+
+    <form class="form-horizontal" {% form_enc form %} action='.' method="post">{% csrf_token %}
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        {% for field in form.visible_fields %}
+            <div class="form-group">
+                <label class="col-xs-2 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="col-xs-6">
+                    {{ field|add_css:"form-control" }}
+                    <span class="help-block">{{ field.help_text }}</span>
+                        {% if field.errors %}
+                            {% for error in field.errors %}
+                                <span class="error">{{ error }}</span>
+                            {% endfor %}
+                        {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        
+        {% submit_row %}
+    
+        <div class="accordion">
+            {% for object, custom_field_list in object_list %}
+                {% include 'exp/includes/imported.html' %}
+            {% endfor %}
+        </div>
+        
+        {% if object_list %}
+            {% submit_row %}
+        {% endif %}
+    </form>
+{% endblock %}
+

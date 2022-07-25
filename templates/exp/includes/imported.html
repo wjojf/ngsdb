@@ -1,0 +1,19 @@
+{% extends "strains/includes/object.html" %}
+{% block item_header %}<input type="checkbox" value="{{ forloop.counter0 }}" name="_selected"/> | {{ object.name }}{% endblock %}
+{% block item_storage %}{% endblock %}
+{% block item_custom %}
+	{% if custom_field_list %}
+		<table>
+		{% for field_name, field_value in custom_field_list.items %}
+			<tr>
+				<td><span class="label">{{ field_name }}</span></td><td>{{ field_value }}</td>
+			</tr>
+		{% endfor %}
+		</table>
+		</div>	
+	{% else %}
+	</div>
+	{% endif %}
+{% endblock %}
+	
+	

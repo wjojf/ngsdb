@@ -1,0 +1,7 @@
+<div class="row submit-row">
+    {% for btn in buttons %}
+    <{{ btn.tag }} {% for attr,value in btn.attrs.items %}{{ attr }}='{{value}}' {% endfor %}>
+        {{ btn.text }}
+    </{{ btn.tag }}>
+    {% endfor %}
+</div>

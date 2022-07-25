@@ -1,0 +1,102 @@
+/* General */
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    padding-top: 60px;
+    margin-bottom: 90px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: 'Roboto Slab', serif;
+    color: #586e75;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-top: 10px;
+
+    background-color: #505967;
+    border-top: 6px solid #586e75;
+    color: #eee8d5;
+    }
+
+footer a {
+    color: #fff;
+}
+
+footer a:hover {
+    color: #abada9;
+    text-decoration: underline;
+}
+
+    
+/* Forms */
+
+.form-horizontal {
+    margin-top: 20px;
+}
+    
+.submit-row {
+    margin: 0 10px 10px 0;
+}
+
+form.search-form div {
+    padding: 8px 5px;
+}
+
+.help-block {
+    color: #93a1a1;
+}
+
+/* Misc */
+
+.summary {
+    margin: 0px 10px 10px 0;
+    background: #eee8d5;
+    padding: 4px 7px 6px 0px;
+    }
+
+span.error { color: #cb4b16; }
+
+/* Badges, labels, and stuff */
+    
+.info-badge {
+    margin: 10px 15px 2px -9px;
+    padding: 4px 7px 3px 10px;
+    background-color: #859900;
+    color: #fdf6e3;
+    opacity: 0.8;
+    float: left;
+    position: relative;
+    border: 2px solid #859900;
+    display: inline-block;
+}
+
+.info-badge:after, .info-badge:before {
+    content: ' ';
+    position: absolute;
+}
+
+.info-badge:after {
+    display: block;
+    border-bottom: 5px solid #859900;
+    width: 0;
+    height: 0;
+    top: -6px;
+    border-left: 8px solid transparent;
+    left: 0;
+}
+
+.info-badge:before {
+    opacity: 0.0;
+    left: -10px;
+    top: 4px;
+}
+
