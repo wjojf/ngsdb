@@ -8,6 +8,7 @@ from django.contrib.contenttypes.forms import BaseGenericInlineFormSet, generic_
 from nlib.forms import InlineInput, InlineSelect
 from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrganism, Descriptor, DescriptorMap, DescriptorValue
 
+
 class UploadForm(forms.Form):
     file = forms.FileField(label=u'File to import (.csv)')
     project = forms.ModelChoiceField(label='Project',
@@ -19,22 +20,42 @@ class UploadForm(forms.Form):
     users = forms.ModelMultipleChoiceField(label='Users',
             queryset=User.objects.all())
 
+
 class SearchForm(forms.Form):
     '''
     Search form for museum item list.
     '''
-    project = forms.CharField(max_length=250, required=False,
+    
+    project = forms.ModelChoiceField(
+        queryset=Project.objects.all(),
         widget=InlineInput(attrs={
-            'css_class': 'col-xs-2',
-            'placeholder': 'project ...',}))
-    platform = forms.CharField(max_length=50, required=False,
+                'css_class': 'col-xs-2',
+                'placeholder': 'project ...', 
+            }
+        ),
+        required=False
+    )
+
+    platform = forms.ModelChoiceField(
+        queryset=ExpPlatform.objects.all(),
         widget=InlineInput(attrs={
-            'css_class': 'col-xs-2',
-            'placeholder': 'platform ...',}))
-    organism = forms.CharField(max_length=50, required=False,
+                'css_class': 'col-xs-2',
+                'placeholder': 'platform ...', 
+            }
+        ),
+        required=False
+    )
+
+    organism = forms.ModelChoiceField(
+        queryset=ModelOrganism.objects.all(),
         widget=InlineInput(attrs={
-            'css_class': 'col-xs-2',
-            'placeholder': 'organism ...',}))
+                'css_class': 'col-xs-2',
+                'placeholder': 'organism ...', 
+            }
+        ),
+        required=False
+    )
+
     qfield = forms.ModelChoiceField(queryset=Descriptor.objects.all(),
         widget=InlineSelect(attrs={
             'css_class': 'col-xs-2',
@@ -45,6 +66,7 @@ class SearchForm(forms.Form):
             'css_class': 'col-xs-2',
             'placeholder': 'descriptor value...',}))
 
+
 class UpdateCustomForm(forms.Form):
     '''
     Descriptor name and descriptor value for updating MuseumItem
@@ -52,6 +74,7 @@ class UpdateCustomForm(forms.Form):
     '''
     name = forms.ModelChoiceField(label=u'Descriptor name', queryset=Descriptor.objects.all())
     value = forms.CharField(label=u'', max_length=255, required=False)
+
 
 class UpdateCommonForm(forms.Form):
     '''

@@ -78,8 +78,6 @@ class DescriptorValueManager(models.Manager):
             desc_name=desc, desc_value=value, content_type=ctype, object_id=obj.pk)
 
 
-
-
 #####################
 #       Models      #
 #####################
@@ -190,10 +188,16 @@ class ExpConditions(models.Model):
 #####################
 #   Final Model     #
 #####################
+def experiment_data_filepath(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/fileformat
+    file_format = filename.split('.')[-1]
+    return f'{file_format}/{filename}'
 
 
 class Experiment(models.Model):
-    data_filepath = models.CharField(max_length=250)
+    
+    data_filepath = models.FileField(verbose_name='Filtered CSV file', upload_to=experiment_data_filepath)
+    
     project = models.ForeignKey(Project, null=True ,on_delete=models.SET_NULL) 
     platform = models.ForeignKey(ExpPlatform, null=True, on_delete=models.SET_NULL)
     users = models.ManyToManyField(User,blank=True)
