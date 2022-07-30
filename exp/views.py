@@ -294,7 +294,9 @@ class HomeView(list.ListView):
                 {'tag': 'a', 'name': '+ Add item', 'href': reverse_lazy('museum_add_item_view'),  'class': 'btn-info',},
                 {'tag': 'a', 'name': '+ Add descriptor', 'href': reverse_lazy('museum_add_descriptor_view'),  'class': 'btn-info',},
             )
-        context['object_list'] = context['filter'].qs
+        
+        if '_clear' not in self.request.GET:
+            context['object_list'] = context['filter'].qs
         
         return context
 

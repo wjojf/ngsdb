@@ -14,7 +14,9 @@
             {% if filter.form %}
                 <form class="search-form" action="." method="GET">
                     <div class="row">
-                        {% for field in filter.form %}{{ field }} {% endfor %}
+                        {% for field in filter.form %}
+                            {{field}}
+                        {% endfor %}
                         <div class="col-xs-2">
                             <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
                             <button type="submit" class="btn" value="_clear" name="_clear">Clear</button>
