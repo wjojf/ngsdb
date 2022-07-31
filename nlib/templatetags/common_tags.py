@@ -1,3 +1,4 @@
+from attr import has
 from django import template
 from django.apps import apps
 from django.urls import reverse
@@ -18,19 +19,22 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def render_obj(context, obj, css_class='order-fieldset', tag='p'):
     
-    def get_fieldset(o, f):
-        fvalue = getattr(o, f)
+    def get_fieldset(o, f:str):
         field = o._meta.get_field(f)
-        custom_fields = ""
+        fvalue = getattr(o, f)
+        custom_fields_string = ""
 
-        if fvalue:
+        if not fvalue:
+            return ''
+               
+        if hasattr(fvalue, 'custom_fields'):  
+            if bool(fvalue.custom_fields.all()):
+                descriptors_strings = [str(cf) for cf in fvalue.custom_fields.all()]
+                custom_fields_string = ": " + ', '.join(descriptors_strings)
             
-            # TODO: How to parse custom fields?
-            
-            return '{fn}:<strong>{fv} {cf}</strong>'.format(
-                fn=field.verbose_name, fv=fvalue, cf=custom_fields)
+        return '{fn}:<strong>{fv} {cf}</strong>'.format(
+            fn=field.verbose_name, fv=fvalue, cf=custom_fields_string)
         
-        return ''
                     
     tpl = '<{tag} class="{css_class}">{fieldset}</{tag}>'
     fields = obj._meta.get_fields()

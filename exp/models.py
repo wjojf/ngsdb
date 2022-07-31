@@ -172,7 +172,7 @@ class DescriptorMap(models.Model):
                            'content_type', 'object_id')
 
     def __str__(self):
-        return f'[{self.content_type}] {self.desc_name} = {self.desc_value}'
+        return f'{self.desc_name} = {self.desc_value}'
 
 
 class ModelOrganism(models.Model):
