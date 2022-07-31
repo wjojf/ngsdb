@@ -13,7 +13,7 @@ class UploadForm(forms.Form):
     file = forms.FileField(label=u'File to import (.csv)')
     project = forms.ModelChoiceField(label='Project',
             queryset=Project.objects.all())
-    platform = forms.ModelChoiceField(label='Project',
+    platform = forms.ModelChoiceField(label='Platform',
             queryset=ExpPlatform.objects.all())
     prep_method = forms.ModelChoiceField(label='Preparation method',
             queryset=PrepMethod.objects.all())

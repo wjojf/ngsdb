@@ -1,7 +1,9 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 ########################
 #     Managers         #
@@ -157,8 +159,10 @@ class DescriptorMap(models.Model):
     desc_name = models.ForeignKey(Descriptor, db_index=True,
                                   on_delete=models.CASCADE)
     content_type = models.ForeignKey(
-        ContentType, verbose_name='model', db_index=True, on_delete=models.CASCADE)
+        ContentType, verbose_name='Django Model', db_index=True, on_delete=models.CASCADE)
+    
     object_id = models.PositiveIntegerField(db_index=True)
+    
     object = GenericForeignKey('content_type', 'object_id')
 
     objects = DescriptorMapManager()
@@ -168,14 +172,24 @@ class DescriptorMap(models.Model):
                            'content_type', 'object_id')
 
     def __str__(self):
-        return u'[%s]: = %s' % (self.desc_name, self.desc_value)
+        return f'[{self.content_type}] {self.desc_name} = {self.desc_value}'
+
 
 class ModelOrganism(models.Model):
-    name = models.CharField(max_length=200)
+    
+    NAME_OPTS = [
+        ('human', 'Human'),
+        ('bacteria', 'Bacteria'),
+        ('mouse', 'Mouse'),
+        ('c.elegans', 'Caenorhabditis elegans')
+    ]
+    
+    name = models.CharField(verbose_name='Organism type', max_length=200, choices=NAME_OPTS)
     custom_fields = GenericRelation(DescriptorMap)
     
+   
     def __str__(self):
-        return f'{self.name}'
+        return f"{self.name} #{self.id}"
 
 
 class ExpConditions(models.Model):
@@ -196,14 +210,26 @@ def experiment_data_filepath(instance, filename):
 
 class Experiment(models.Model):
     
-    data_filepath = models.FileField(verbose_name='Filtered CSV file', upload_to=experiment_data_filepath)
+    metadata_filepath = models.FileField(verbose_name='Metadata file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
+    data_filepath = models.FileField(verbose_name='Results file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
     
-    project = models.ForeignKey(Project, null=True ,on_delete=models.SET_NULL) 
-    platform = models.ForeignKey(ExpPlatform, null=True, on_delete=models.SET_NULL)
-    users = models.ManyToManyField(User,blank=True)
-    organism = models.ForeignKey(ModelOrganism, null=True, on_delete=models.SET_NULL)
-    prep_method = models.ForeignKey(PrepMethod, null=True, on_delete=models.SET_NULL)
-    conditions = models.ForeignKey(ExpConditions, null=True, on_delete=models.SET_NULL)
+    project = models.ForeignKey(
+        Project, null=True, on_delete=models.SET_NULL, verbose_name='Experiment Project')
+    
+    platform = models.ForeignKey(
+        ExpPlatform, null=True, on_delete=models.SET_NULL, verbose_name='Experiment Platform')
+    
+    users = models.ManyToManyField(User, blank=True, verbose_name='Users')
+    
+    organism = models.ForeignKey(
+        ModelOrganism, null=True, on_delete=models.SET_NULL, verbose_name='Model Organism')
+    
+    prep_method = models.ForeignKey(
+        PrepMethod, null=True, on_delete=models.SET_NULL, verbose_name='Preparation Method')
+    
+    conditions = models.ForeignKey(
+        ExpConditions, null=True, on_delete=models.SET_NULL, verbose_name='Experiment Conditions')
 
     def __str__(self):
         return f'Exp {self.id} \n {self.data_filepath}'
+    

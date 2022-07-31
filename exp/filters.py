@@ -7,4 +7,4 @@ class ExperimentFilter(django_filters.FilterSet):
     class Meta:
         model = Experiment
         fields = '__all__'
-        exclude = ['data_filepath']
+        exclude = ['data_filepath', 'metadata_filepath']

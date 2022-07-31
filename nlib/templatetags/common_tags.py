@@ -7,6 +7,9 @@ from django.utils.encoding import smart_str
 from django.template import Context
 from django.template.defaultfilters import date, escape, capfirst
 from django.contrib.auth.models import User
+from django.db.models import Q
+
+from exp.models import DescriptorMap
 
 from nlib.views import ALLOWED_LOOKUP_TYPES
 
@@ -14,36 +17,29 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def render_obj(context, obj, css_class='order-fieldset', tag='p'):
-    '''
-    Renders an obj according to list_display fieldsets defined in obj's
-    Meta class.
-    
-    `list_display` must define a list of lists (fieldsets) of model's
-    fields. Each fieldset is then rendered on the same line.
-    '''
     
     def get_fieldset(o, f):
         fvalue = getattr(o, f)
         field = o._meta.get_field(f)
+        custom_fields = ""
+
         if fvalue:
-            if hasattr(field, 'choices') and field.choices:
-                for choice,descr in field.choices:
-                    if choice == fvalue:
-                        fvalue = descr
-                        break
-            return '{fn}:<strong>{fv}</strong>'.format(
-                fn=field.verbose_name, fv=fvalue)
-        else:
-            return ''
+            
+            # TODO: How to parse custom fields?
+            
+            return '{fn}:<strong>{fv} {cf}</strong>'.format(
+                fn=field.verbose_name, fv=fvalue, cf=custom_fields)
+        
+        return ''
                     
     tpl = '<{tag} class="{css_class}">{fieldset}</{tag}>'
     fields = obj._meta.get_fields()
     lines = [tpl.format(
         tag=tag, 
         css_class=css_class,
-        #fieldset=''.join([''.join(get_fieldset(obj, f.name))])) for f in field_sets 
         fieldset=get_fieldset(obj, f.name)) for f in fields
     ]
+    
     return mark_safe(''.join(lines))
 
 

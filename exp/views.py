@@ -288,68 +288,21 @@ class HomeView(list.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        context['filter'] = self.filterset_class(self.request.GET, queryset=self.model.objects.all())
+        context['filter_obj'] = self.filterset_class(self.request.GET, queryset=self.model.objects.all())
         context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
         context['submit_line'] = (
                 {'tag': 'a', 'name': '+ Add item', 'href': reverse_lazy('museum_add_item_view'),  'class': 'btn-info',},
                 {'tag': 'a', 'name': '+ Add descriptor', 'href': reverse_lazy('museum_add_descriptor_view'),  'class': 'btn-info',},
             )
         
-        if '_clear' not in self.request.GET:
-            context['object_list'] = context['filter'].qs
-        
         return context
-
-
-# class HomeView(FilteredModelView):
-
-#     model = Experiment
-#     template_name = 'exp/home.html'
-#     search_form_class = SearchForm
-#     paginate_by = 50
     
-#     def __init__(self, **kwargs):
-#         kwargs.update({'descriptors': {},})
-#         super(HomeView, self).__init__(**kwargs)
-
-#     def get(self, request, *args, **kwargs):
-#         # We need to handle custom fields here
-#         # FilteredModelView will take care of normal fields
-#         params = request.GET.copy()
-#         if '_clear' in params:
-#             self.descriptors = {}
-#         else:
-#             descriptor = params.get('qfield', '')
-#             value = params.get('qvalue', '')
-#             if descriptor and value:
-#                 self.descriptors.update({
-#                                 'descriptor': descriptor,
-#                                 'value': value,
-#                         })
-#         return super(HomeView, self).get(request, *args, **kwargs)
-
-#     def get_queryset(self):
-#         '''
-#         Filter the queryset. Common and custom fields are handled
-#         separately. Querystring filters are added to common fields.
-
-#         Handle storage separately.
-#         '''
-#         qs = super(HomeView, self).get_queryset()
-#         if self.descriptors != {}:
-#             return DescriptorMap._default_manager.get_by_model(qs, self.descriptors)
-#         else:
-#             return qs
-
-#     def get_context_data(self, **kwargs):
-#         context = super(HomeView, self).get_context_data(**kwargs)
-#         context['custom_filters'] = self.descriptors
-#         context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-#         context['submit_line'] = (
-#                 {'tag': 'a', 'name': '+ Add item', 'href': reverse_lazy('museum_add_item_view'),  'class': 'btn-info',},
-#                 {'tag': 'a', 'name': '+ Add descriptor', 'href': reverse_lazy('museum_add_descriptor_view'),  'class': 'btn-info',},
-#                 )
-#         return context
+    
+    def get_queryset(self):
+        if '_clear' not in self.request.GET:
+            return self.filterset_class(self.request.GET, queryset=self.model.objects.all()).qs
+            
+        return super().get_queryset()        
 
 
 class GenericInlineFormsetMixin(object):

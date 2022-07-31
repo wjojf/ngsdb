@@ -11,10 +11,10 @@
             </ul>
         {% endblock %}
         {% block filters %}
-            {% if filter.form %}
+            {% if filter_obj.form %}
                 <form class="search-form" action="." method="GET">
                     <div class="row">
-                        {% for field in filter.form %}
+                        {% for field in filter_obj.form %}
                             {{field}}
                         {% endfor %}
                         <div class="col-xs-2">

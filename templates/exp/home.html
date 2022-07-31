@@ -10,26 +10,12 @@
     <div class="summary">
         <div class="info-badge">
             <div class="order-stats-date">
-                {{ obj.author }}
+                {{ obj.users }}
             </div>
         </div>
-        <h4>{{ obj.name }}</h4>
+        <h4>{{ obj }}</h4>
         <div class="item-details">
-            <p class="item-fieldset">
-                Storage:
-                {% for storage in obj.storage.all %}
-                    <strong>
-                    {{ storage }}{% if not forloop.last %},{% endif %}
-                    </strong>
-                {% endfor %}
-            </p>
             {% render_obj obj css_class='item-fieldset' %}
-            {% for descriptor in obj.custom_fields.all %}
-                <div class="row row-descriptor">
-                    <div class="col-xs-3">{{ descriptor.desc_name }}</div>
-                    <div class="col-xs-4"><strong>{{ descriptor.desc_value }}</strong></div>
-                </div>
-            {% endfor %}
         </div>
     </div>
     {% endfor %}
