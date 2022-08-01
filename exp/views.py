@@ -20,6 +20,7 @@ from nlib.utils import build_tabs_dict
 from exp.models import Experiment, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap
 from exp.forms import DescriptorMapInline, SearchForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
 from exp.filters import ExperimentFilter
+import exp.parse_meta as exp_meta
 
 
 EXP_TAB = {
@@ -30,6 +31,8 @@ EXP_TAB = {
 
 class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
     '''
+    TODO:
+
     Handles uploading of a .csv file.
     First renders the template with UploadForm. When the form is POSTed
     uploads the file, parses its contents and stores it in `self.uploaded`.
@@ -48,112 +51,11 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
     template_name = 'exp/upload.html'
     import_template_name = 'exp/import.html'
     form_class = UploadForm
-    common_field_names = ('project', 'users', 'organism', 'platform',
-            'prep_method', 'conditions', 'data_filepath',)
 
-    def __init__(self, **kwargs):
-        init_kwargs = {
-            'uploaded': [],
-            'project': None,
-            'platform': None,
-        }
-        kwargs.update(init_kwargs)
-        super(UploadCSVView, self).__init__(**kwargs)
 
-    def _construct_initial(self, **kwargs):
-        '''
-        FIXME: Needs updating to construct inlines for ModelOrganism and
-        ExpConditions fields.
-
-        Constructs initial dictionaries (one at a time!) for the forms
-        in UploadedFormset and its inlines (custom fields).
-
-        {'field1': 'val1', 'field2': 'val2', 'inlines': [{'desc1': 'val1',}],}
-        '''
-        field_dict = {
-                'project': self.project,
-                'platform': self.platform,
-                'inlines': [],
-                }
-        for key, val in kwargs.items():
-            k = key.lower().strip()
-            if isinstance(val, str):
-                val = smart_text(val).strip()
-            if k in self.common_field_names and val != '':
-                # Only fields explicitly listed in common_field_names
-                # will go here.
-                field_dict[k] = val
-            elif val != '':
-                # Everyting else is a descriptor - goes in inlines
-                field_dict['inlines'].append({
-                        'desc_name': k,
-                        'desc_value': val,
-                        })
-        return field_dict
-
-    def _upload_file(self, content):
-        '''
-        FIXME: This needs to handle a typical run samplesheet file
-        Parses uploaded .csv file and returns resulting records
-        '''
-        import csv
-        result = []
-        lines = content.read().split('\n')
-        reader = csv.DictReader(lines)
-        for rec in reader:
-            if rec['Name'] == '':
-                # Skip empty lines
-                continue
-            result.append(self._construct_initial(**rec))
-        return result
-
-    def get_formset(self):
-        kwargs = {
-                'formset': BaseUploadedFormSet,
-                'fields': '__all__',
-                'extra': len(self.uploaded),
-                }
-        formset_class = modelformset_factory(Experiment, **kwargs)
-        # We don't want to pull all existing instances, therefore
-        # use empty queryset
-        defaults = {
-                'initial': self.uploaded,
-                'queryset': Experiment.objects.none(),
-                }
-        return formset_class(**defaults)
-
-    def get_template_names(self):
-        if self.uploaded:
-            return self.import_template_name
-        else:
-            return self.template_name
-
-    def get_context_data(self, **kwargs):
-        context = super(UploadCSVView, self).get_context_data(**kwargs)
-        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        if self.request.method == 'GET':
-            context['submit_line'] = (
-                {'name': 'clear', 'class': 'btn-default',},
-                {'name': 'upload', 'class': 'btn-success', },
-                )
-        else:
-            context['formset'] = self.get_formset()
-            context['submit_line'] = (
-                {'name': 'clear', 'class': 'btn-default',},
-                {'name': 'import all', 'class': 'btn-info', },
-                {'name': 'import selected', 'class': 'btn-success',},
-                )
-        return context
-
-    def form_valid(self, form):
-        if '_upload' in self.request.POST:
-            # Can (will) handle multiple uploaded files
-            self.author, created = Owner.objects.get_or_create(name=form.cleaned_data['author'])
-            #self.author = form.cleaned_data['author']
-            self.storage = form.cleaned_data['storage']
-            for name, content in self.request.FILES.items():
-                self.uploaded += self._upload_file(content)
-            return self.render_to_response(context=self.get_context_data())
+    def post(self, request, *args, **kwargs):
+        return super(UploadCSVView, self).post(request, *args, **kwargs)
+   
 
 
 class ImportCSVView(edit.FormView):

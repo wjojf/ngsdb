@@ -13,6 +13,7 @@ matplotlib = "*"
 pandas = "*"
 dash-bio = "*"
 "backports.zoneinfo" = "*"
+django-filter = "*"
 
 [dev-packages]
 

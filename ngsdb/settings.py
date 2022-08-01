@@ -86,9 +86,9 @@ WSGI_APPLICATION = 'ngsdb.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': "admin",
+        'NAME': 'ngsdb',
+        'USER': 'ngs_admin',
+        'PASSWORD': "ngs_password",
         'HOST': 'localhost',
         'PORT': '5432',
     }

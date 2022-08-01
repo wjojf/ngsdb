@@ -192,11 +192,11 @@ class ModelOrganism(models.Model):
         return f"{self.name} #{self.id}"
 
 
-class ExpConditions(models.Model):
-    custom_fields = GenericRelation(DescriptorMap)
+# class ExpConditions(models.Model):
+#     custom_fields = GenericRelation(DescriptorMap)
 
-    def __str__(self):
-        return f'Conditions Set # {self.id}'
+#     def __str__(self):
+#         return f'Conditions Set # {self.id}'
 
 
 #####################
@@ -227,8 +227,7 @@ class Experiment(models.Model):
     prep_method = models.ForeignKey(
         PrepMethod, null=True, on_delete=models.SET_NULL, verbose_name='Preparation Method')
     
-    conditions = models.ForeignKey(
-        ExpConditions, null=True, on_delete=models.SET_NULL, verbose_name='Experiment Conditions')
+    conditions = GenericRelation(DescriptorMap)
 
     def __str__(self):
         return f'Exp {self.id} \n {self.data_filepath}'
