@@ -1,0 +1,1 @@
+<MultiValueDict: {'metadata_file': [<InMemoryUploadedFile: data.csv (text/csv)>], 'rawdata_file': [<InMemoryUploadedFile: train.csv (text/csv)>]}>

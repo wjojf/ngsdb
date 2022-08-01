@@ -2,6 +2,7 @@ from doctest import Example
 from re import template
 from telnetlib import EXOPL
 from attr import fields
+from django.shortcuts import redirect
 from django.views.generic import list, edit
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
@@ -10,7 +11,7 @@ from django.utils.encoding import smart_str
 
 from django.forms.models import modelform_factory, modelformset_factory
 from django.forms.formsets import formset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 
@@ -53,10 +54,27 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
     form_class = UploadForm
 
 
-    def post(self, request, *args, **kwargs):
-        return super(UploadCSVView, self).post(request, *args, **kwargs)
-   
+    def get_context_data(self, **kwargs):
+        context = super(UploadCSVView, self).get_context_data(**kwargs)
+        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
+        
+        if self.request.method == 'GET':
+            context['submit_line'] = (
+                {'name': 'clear', 'class': 'btn-default',},
+                {'name': 'upload', 'class': 'btn-success', },
+                )
 
+        return context
+
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        #TODO:
+
+        with open('test.txt', 'w', newline='\n') as t_f:
+            t_f.write(str(request.FILES))
+
+        return redirect('exp_home_view')
+   
 
 class ImportCSVView(edit.FormView):
     '''
