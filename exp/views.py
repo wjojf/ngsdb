@@ -70,8 +70,9 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         #TODO:
 
-        with open('test.txt', 'w', newline='\n') as t_f:
-            t_f.write(str(request.FILES))
+        files = request.FILES
+        metadata_file = files['metadata_file']
+        rawdata_file = files['rawdata_file']
 
         return redirect('exp_home_view')
    
