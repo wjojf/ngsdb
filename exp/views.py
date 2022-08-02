@@ -67,9 +67,12 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
         return context
 
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        #TODO:
+    def _handle_meta(self, content):
+        pass 
 
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        
         files = request.FILES
         metadata_file = files['metadata_file']
         rawdata_file = files['rawdata_file']
@@ -115,7 +118,7 @@ class BaseActionView(list.ListView, edit.BaseFormView):
     idlist = []
 
     def get_success_url(self):
-        url = reverse('admin:strains_experiment_changelist')
+        url = reverse('admin:exp_experiment_changelist')
         return url
 
     def get(self, request, *args, **kwargs):

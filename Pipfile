@@ -14,6 +14,7 @@ pandas = "*"
 dash-bio = "*"
 "backports.zoneinfo" = "*"
 django-filter = "*"
+ipython = "*"
 
 [dev-packages]
 

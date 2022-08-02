@@ -4,8 +4,18 @@ import exp.models as exp_models
 
 EXPERIMENT_DESCRIPTOR_COLUMNS = {
 	'Descriptor': ['sample'],
-	'DescriptorValue': ['cond', 'condition']
+	'DescriptorValue': ['cond', 'condition', 'cond1', 'cond 1', 'condition1', 'condition 1'],
+	'DescriptorValue2': ['cond2', 'cond 2', 'condition 2', 'condtion2']
 }
+
+TEST_DF_ROWS = [
+	(f'ig0{i}', f'L{i}', f'L{i}_{i}')
+	for i in range(1, 4)
+]
+
+TEST_DF_COLUMNS = ['SAMPLE', 'CONDITION 1', 'COND 2']
+
+TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
 
 # Sample Cond                    Descriptor   DescriptorValue
 # ig01	 L1							ig01	 L1
@@ -13,6 +23,14 @@ EXPERIMENT_DESCRIPTOR_COLUMNS = {
 # ig03	 L3							...      ...
 # ig04	 L4							...      ...
 # ig05   L5							ig05      L5
+
+
+# Sample Cond Cond 2                  Descriptor   DescriptorValue  DescriptorValue2
+# ig01	 L1	  L1_1						ig01	  			L1          L1_1
+# ig02	 L2			  		-----> 		ig02				L2          None
+# ig03	 L3								...      
+# ig04	 L4								...      
+# ig05   L5	  L_5_5					ig05      L5        L5          L5_5
 
 
 def load_df_from_content(content, delimeter='\n'):
@@ -31,7 +49,10 @@ def match_column(column_name: str):
 	matched_columns = {}
 
 	for descriptor_col in EXPERIMENT_DESCRIPTOR_COLUMNS:
-		if any((column_name.lower().strip() in col_example for col_example in EXPERIMENT_DESCRIPTOR_COLUMNS[descriptor_col])):
+		if any(
+			(column_name.lower().strip() == col_example
+			 for col_example in EXPERIMENT_DESCRIPTOR_COLUMNS[descriptor_col])
+		):
 			matched_columns = {column_name: descriptor_col}
 			break
 	
@@ -39,7 +60,6 @@ def match_column(column_name: str):
 
 
 def filter_df(df):
-	# FIXME: how to handle multiple Conditions columns?
 	#	Filters DataFrame: 
 	# keep only columns where match_column(column) is not empty and renames columns
 	matched_columns = [match_column(col) for col in df.columns if match_column(col) != {}]
@@ -53,10 +73,34 @@ def filter_df(df):
 	return filtered_df[valid_columns]
 
 
-def create_descriptors(df, content_type, obj_id):
-	# TODO: 
-	# Creates DescriptorMap objects
-	# df: DataFrame with columns ('Descriptor', 'DescriptorValue')
-	pass 
+def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_id):
+	# Creates DescriptorMap objects from DataFrame
+	# df - DataFrame with at least two columns ('Descriptor' & 'DescriptorValue')
+	# desc_name_column: str:  column containing descriptor names
+	# desc_val_column: str: column containing descriptor values
+	# content_type: ContentType object for DescriptorMap 
+	# obj_id: int object_id for DescriptorMap object 
+
+
+	if not (desc_name_column in df.columns and desc_val_column in df.columns):
+		return 
+
+	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
+		
+		descriptor_obj, desc_created = exp_models.Descriptor.objects.get_or_create(
+			name=desc_name.lower().strip()
+		)
+		
+		desc_value_obj, desc_val_created = exp_models.DescriptorValue.objects.get_or_create(
+			descriptor=descriptor_obj,
+			value=desc_value.lower().strip()
+		)
+
+		descriptormap_obj, descmap_created = exp_models.DescriptorMap.objects.get_or_create(
+			desc_name=descriptor_obj,
+			desc_value=desc_value_obj,
+			content_type=content_type,
+			obj_id=obj_id
+		)
 
 
