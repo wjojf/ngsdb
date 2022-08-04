@@ -84,7 +84,10 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 	# desc_val_column: str: column containing descriptor values
 	# content_type: ContentType object for DescriptorMap 
 	# obj_id: int object_id for DescriptorMap object 
-
+	
+	
+	if (desc_name_column not in df.columns) or (desc_val_column not in df.columns):
+		return 
 	
 
 	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
@@ -117,11 +120,9 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 
 def _parse_meta(content, obj_id, content_type):
 	df = load_df_from_content(content)
-
 	filtered_df = filter_df(df)
-	#filtered_df.to_csv('debug.csv')
 
-	create_descriptors(filtered_df, 'Descriptor', 'DescriptorValue', content_type, obj_id)
-	
-	if 'DescriptorValue2' in filtered_df.columns:
-		create_descriptors(filtered_df, 'Descriptor', 'DescriptorValue2', content_type, obj_id)
+	descriptor_value_columns = [col for col in df.columns if 'DescriptorValue' in col]
+
+	for descriptor_value_column in descriptor_value_columns:
+		create_descriptors(filtered_df, 'Descriptor', descriptor_value_column, content_type, obj_id)
