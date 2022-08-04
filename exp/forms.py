@@ -12,12 +12,19 @@ from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrgani
 class UploadForm(forms.Form):
     metadata_file = forms.FileField(label=u'Metadata File to import (.csv)')
     rawdata_file = forms.FileField(label=u'Raw data File to import (.csv)')
+    
     project = forms.ModelChoiceField(label='Project',
             queryset=Project.objects.all())
+    
+    organism = forms.ModelChoiceField(label=u'Model Organism', queryset=ModelOrganism.objects.all())
+    
+    
     platform = forms.ModelChoiceField(label='Platform',
             queryset=ExpPlatform.objects.all())
+    
     prep_method = forms.ModelChoiceField(label='Preparation method',
             queryset=PrepMethod.objects.all())
+    
     users = forms.ModelMultipleChoiceField(label='Users',
             queryset=User.objects.all())
 

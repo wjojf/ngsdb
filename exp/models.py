@@ -230,5 +230,5 @@ class Experiment(models.Model):
     conditions = GenericRelation(DescriptorMap)
 
     def __str__(self):
-        return f'Exp {self.id} \n {self.data_filepath}'
+        return f'Experiment {self.id}'
     

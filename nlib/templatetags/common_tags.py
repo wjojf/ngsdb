@@ -16,6 +16,7 @@ from nlib.views import ALLOWED_LOOKUP_TYPES
 
 register = template.Library()
 
+
 @register.simple_tag(takes_context=True)
 def render_obj(context, obj, css_class='order-fieldset', tag='p'):
     
@@ -83,6 +84,7 @@ def submit_row(context):
         buttons.append(btn_opts)
     return {'buttons': buttons,}
     
+
 @register.simple_tag()
 def render_button(tag, text, **kwargs):
     '''
@@ -110,6 +112,7 @@ def render_button(tag, text, **kwargs):
         attrs_flat = ' {}'.format(' '.join(attrs))
     return mark_safe(btn_tpl.format(tag=tag, text=text, attrs=attrs_flat))
 
+
 @register.simple_tag()
 def form_enc(form):
     from django.forms.fields import FileField
@@ -119,6 +122,7 @@ def form_enc(form):
             res = 'enctype="multipart/form-data"'
             break
     return res
+
 
 @register.simple_tag(takes_context=True)
 def get_objects_by_user(context, user):

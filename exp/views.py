@@ -3,6 +3,7 @@ from re import template
 from telnetlib import EXOPL
 from attr import fields
 from django.shortcuts import redirect
+from django.views import View
 from django.views.generic import list, edit
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
@@ -94,31 +95,6 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
         return redirect('exp_home_view')
    
 
-class ImportCSVView(edit.FormView):
-    '''
-    Handles saving MuseumItems uploaded in a .csv file to database.
-    '''
-    template_name  = 'exp/import.html'
-
-
-    def get(self, request, *args, **kwargs):
-        formset_class = modelformset_factory(Experiment, formset=BaseUploadedFormSet, fields='__all__')
-        formset = formset_class(data=request.POST, queryset=Experiment.objects.none())
-        context = self.get_context_data(**kwargs)
-        context['formset'] = formset
-        context['tabs'] = build_tabs_dict(request, EXP_TAB)
-        return self.render_to_response(context)
-
-
-    def post(self, request, *args, **kwargs):
-        formset_class = modelformset_factory(Experiment,formset=BaseUploadedFormSet, fields='__all__')
-        formset = formset_class(data=request.POST, queryset=Experiment.objects.none())
-        if formset.is_valid():
-            self.objects = formset.save()
-            return HttpResponseRedirect(reverse_lazy('exp_home_view'))
-        else:
-            return self.get(request, *args, **kwargs) 
-
 ##########################################################################
 
 class BaseActionView(list.ListView, edit.BaseFormView):
@@ -200,6 +176,10 @@ class UpdateCustomView(BaseActionView):
             for item in self.queryset:
                 DescriptorMap.objects.update_for_object(item, **fields)
         return HttpResponseRedirect(self.get_success_url())
+
+
+class ImportCSVView(View):
+    pass 
 
 ##########################################################################
 
