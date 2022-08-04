@@ -23,16 +23,25 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         field = o._meta.get_field(f)
         fvalue = getattr(o, f)
         custom_fields_string = ""
+        tag_template = '{fn}:<strong>{fv} {cf}</strong>'
 
-        if not fvalue:
+        # skip empty values or id field
+        if not fvalue or f == 'id':
             return ''
-               
+        
+        # FIXME: hardcode
+        if f == 'conditions':
+            fn = field.verbose_name
+            fv = ', '.join([str(desc_map) for desc_map in fvalue.all()])
+            return tag_template.format(fn=fn, fv=fv, cf=custom_fields_string)  
+
+        # Render fields with custom_fields attr(ModelOrganism f.e)
         if hasattr(fvalue, 'custom_fields'):  
             if bool(fvalue.custom_fields.all()):
                 descriptors_strings = [str(cf) for cf in fvalue.custom_fields.all()]
                 custom_fields_string = ": " + ', '.join(descriptors_strings)
             
-        return '{fn}:<strong>{fv} {cf}</strong>'.format(
+        return tag_template.format(
             fn=field.verbose_name, fv=fvalue, cf=custom_fields_string)
         
                     
