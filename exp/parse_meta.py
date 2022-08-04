@@ -1,3 +1,4 @@
+from venv import create
 import pandas as pd 
 import exp.models as exp_models
 
@@ -34,8 +35,8 @@ TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
 
 
 def load_df_from_content(content, delimeter='\n'):
-	return pd.DataFrame(content.read().split(delimeter))
-
+	df = pd.read_csv(content, sep=',')
+	return df
 
 def match_column(column_name: str):
 	global EXPERIMENT_DESCRIPTOR_COLUMNS
@@ -60,6 +61,7 @@ def match_column(column_name: str):
 
 
 def filter_df(df):
+	global EXPERIMENT_DESCRIPTOR_COLUMNS
 	#	Filters DataFrame: 
 	# keep only columns where match_column(column) is not empty and renames columns
 	matched_columns = [match_column(col) for col in df.columns if match_column(col) != {}]
@@ -70,7 +72,9 @@ def filter_df(df):
 	filtered_df = df.rename(columns=rename_columns)
 	valid_columns = [col for col in filtered_df.columns if col in EXPERIMENT_DESCRIPTOR_COLUMNS]
 	
-	return filtered_df[valid_columns]
+	output = filtered_df[valid_columns]
+
+	return output
 
 
 def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_id):
@@ -81,26 +85,43 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 	# content_type: ContentType object for DescriptorMap 
 	# obj_id: int object_id for DescriptorMap object 
 
-
-	if not (desc_name_column in df.columns and desc_val_column in df.columns):
-		return 
+	
 
 	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
-		
+
+			
 		descriptor_obj, desc_created = exp_models.Descriptor.objects.get_or_create(
 			name=desc_name.lower().strip()
 		)
+
 		
 		desc_value_obj, desc_val_created = exp_models.DescriptorValue.objects.get_or_create(
 			descriptor=descriptor_obj,
 			value=desc_value.lower().strip()
 		)
 
+
+
 		descriptormap_obj, descmap_created = exp_models.DescriptorMap.objects.get_or_create(
 			desc_name=descriptor_obj,
 			desc_value=desc_value_obj,
 			content_type=content_type,
-			obj_id=obj_id
+			object_id=obj_id
 		)
 
 
+									#################
+									# Main Function #
+									#################
+
+
+def _parse_meta(content, obj_id, content_type):
+	df = load_df_from_content(content)
+
+	filtered_df = filter_df(df)
+	#filtered_df.to_csv('debug.csv')
+
+	create_descriptors(filtered_df, 'Descriptor', 'DescriptorValue', content_type, obj_id)
+	
+	if 'DescriptorValue2' in filtered_df.columns:
+		create_descriptors(filtered_df, 'Descriptor', 'DescriptorValue2', content_type, obj_id)

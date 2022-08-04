@@ -12,7 +12,9 @@ from django.utils.encoding import smart_str
 from django.forms.models import modelform_factory, modelformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 
 from nlib.views import FilteredModelView
@@ -67,16 +69,28 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
         return context
 
 
-    def _handle_meta(self, content):
-        pass 
-
-
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         
+        exp_obj = Experiment.objects.create(
+            metadata_filepath=request.FILES['metadata_file'],
+            data_filepath=request.FILES['rawdata_file'],
+            project=Project.objects.filter(pk=request.POST['project'])[0],
+            platform=ExpPlatform.objects.filter(pk=request.POST['platform'])[0],
+            prep_method=PrepMethod.objects.filter(pk=request.POST['prep_method'])[0],
+        )
+        exp_obj.users.set(
+            User.objects.in_bulk([
+                request.POST['users']
+            ])
+        )   # Any other options don't work
+        
+        obj_id = exp_obj.id
+        content_type = ContentType.objects.get_for_model(exp_obj)
         files = request.FILES
-        metadata_file = files['metadata_file']
-        rawdata_file = files['rawdata_file']
+        metadata_content = files['metadata_file'].open()
 
+        exp_meta._parse_meta(metadata_content, obj_id, content_type)
+        
         return redirect('exp_home_view')
    
 
