@@ -92,7 +92,10 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 	
 
 	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
-			
+		
+		desc_name = str(desc_name)
+		desc_value = str(desc_value)
+  
 		descriptor_obj, desc_created = exp_models.Descriptor.objects.get_or_create(
 			name=desc_name.lower().strip()
 		)
