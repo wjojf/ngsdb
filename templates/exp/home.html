@@ -10,10 +10,10 @@
     <div class="summary">
         <div class="info-badge">
             <div class="order-stats-date">
-                {{ obj.users }}
+                {% render_obj_users obj %}
             </div>
         </div>
-        <h4>{{ obj }}</></h4>
+        <h4>{{ obj }}</><a href="{% url 'volcano-plot' obj.id%}">Volcano Plot</a></></h4>
         <div class="item-details">
             {% render_obj obj css_class='item-fieldset' %}
         </div>

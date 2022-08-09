@@ -4,9 +4,9 @@ import exp.models as exp_models
 
 
 EXPERIMENT_DESCRIPTOR_COLUMNS = {
-	'Descriptor': ['sample'],
+	'Descriptor': ['sample', 'sample_id', 'sample id', 'sampleid'],
 	'DescriptorValue': ['cond', 'condition', 'cond1', 'cond 1', 'condition1', 'condition 1'],
-	'DescriptorValue2': ['cond2', 'cond 2', 'condition 2', 'condtion2']
+	'DescriptorValue2': ['cond2', 'cond 2', 'condition 2', 'condition2']
 }
 
 TEST_DF_ROWS = [
@@ -34,9 +34,10 @@ TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
 # ig05   L5	  L_5_5					ig05      L5        L5          L5_5
 
 
-def load_df_from_content(content, delimeter='\n'):
+def load_df_from_content(content):
 	df = pd.read_csv(content, sep=',')
 	return df
+
 
 def match_column(column_name: str):
 	global EXPERIMENT_DESCRIPTOR_COLUMNS
@@ -84,14 +85,13 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 	# desc_val_column: str: column containing descriptor values
 	# content_type: ContentType object for DescriptorMap 
 	# obj_id: int object_id for DescriptorMap object 
-	
+
 	
 	if (desc_name_column not in df.columns) or (desc_val_column not in df.columns):
 		return 
 	
 
 	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
-
 			
 		descriptor_obj, desc_created = exp_models.Descriptor.objects.get_or_create(
 			name=desc_name.lower().strip()
@@ -119,10 +119,14 @@ def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_
 
 
 def _parse_meta(content, obj_id, content_type):
-	df = load_df_from_content(content)
-	filtered_df = filter_df(df)
+    
+ 
+    df = load_df_from_content(content)
 
-	descriptor_value_columns = [col for col in df.columns if 'DescriptorValue' in col]
+    filtered_df = filter_df(df)
 
-	for descriptor_value_column in descriptor_value_columns:
-		create_descriptors(filtered_df, 'Descriptor', descriptor_value_column, content_type, obj_id)
+    descriptor_value_columns = [col for col in filtered_df.columns if 'DescriptorValue' in col]
+
+    
+    for descriptor_value_column in descriptor_value_columns:
+        create_descriptors(filtered_df, 'Descriptor', descriptor_value_column, content_type, obj_id)

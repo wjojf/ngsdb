@@ -16,6 +16,10 @@ from nlib.views import ALLOWED_LOOKUP_TYPES
 
 register = template.Library()
 
+@register.simple_tag(takes_context=True)
+def render_obj_users(context, obj, tag='p'):
+    return mark_safe(f"<{tag}>{', '.join([str(user) for user in obj.users.all()])}</{tag}>")
+
 
 @register.simple_tag(takes_context=True)
 def render_obj(context, obj, css_class='order-fieldset', tag='p'):
@@ -27,7 +31,7 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         tag_template = '{fn}:<strong>{fv} {cf}</strong>'
 
         # skip empty values or id field
-        if not fvalue or f == 'id':
+        if not fvalue or f == 'id' or 'filepath' in f:
             return ''
         
         # FIXME: hardcode

@@ -1,7 +1,7 @@
 import os
 from django.views.generic import TemplateView, DetailView
 from matplotlib.pyplot import title
-from ngsdb.settings import STATIC_URL
+from ngsdb.settings import STATIC_URL, MEDIA_ROOT
 from exp.models import Experiment
 
 # Visual imports
@@ -70,8 +70,8 @@ class VolcanoPlotView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        data_filepath = self.get_object().data_filepath
-        df = pd.read_csv(os.path.join(STATIC_URL, data_filepath)).dropna()
+        data_filepath = str(self.get_object().data_filepath)
+        df = pd.read_csv(os.path.join(MEDIA_ROOT, data_filepath)).dropna()
 
         figure = dash_bio.VolcanoPlot(
             dataframe=df,
