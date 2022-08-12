@@ -20,7 +20,9 @@ admin.site.register(exp_models.DescriptorMap)
 class DescriptorMapInline(GenericTabularInline):
     model = exp_models.DescriptorMap
     form = DescriptorMapInline
+    classes = ['wide', 'collapse']
     extra = 1
+    
 
 #    ----------------------------------------
 
@@ -43,7 +45,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     fieldsets = (
         
         ('Files', {
-            'classes': ['extrapretty'],
+            'classes': ['wide', 'extrapretty'],
             'fields': ['metadata_filepath', 'data_filepath']
             }
         ),
