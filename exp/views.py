@@ -21,7 +21,7 @@ from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from nlib.views import FilteredModelView
 from nlib.utils import build_tabs_dict
 
-from exp.models import Experiment, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap
+from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap
 from exp.forms import DescriptorMapInline, SearchForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
 from exp.filters import ExperimentFilter
 import exp.parse_meta as exp_meta
@@ -76,6 +76,7 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
             metadata_filepath=request.FILES['metadata_file'],
             data_filepath=request.FILES['rawdata_file'],
             project=Project.objects.filter(pk=request.POST['project'])[0],
+            organism=ModelOrganism.objects.filter(pk=request.POST['organism'])[0],
             platform=ExpPlatform.objects.filter(pk=request.POST['platform'])[0],
             prep_method=PrepMethod.objects.filter(pk=request.POST['prep_method'])[0],
         )
