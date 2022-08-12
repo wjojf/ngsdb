@@ -16,6 +16,7 @@ admin.site.register(exp_models.Descriptor)
 admin.site.register(exp_models.DescriptorValue)
 admin.site.register(exp_models.DescriptorMap)
 
+
 #         --------------Inlines------------
 class DescriptorMapInline(GenericTabularInline):
     model = exp_models.DescriptorMap
