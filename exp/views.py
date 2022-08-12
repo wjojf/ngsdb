@@ -22,7 +22,7 @@ from nlib.views import FilteredModelView
 from nlib.utils import build_tabs_dict
 
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap
-from exp.forms import DescriptorMapInline, SearchForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
+from exp.forms import DescriptorMapInlineForm, SearchForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
 from exp.filters import ExperimentFilter
 import exp.parse_meta as exp_meta
 
@@ -299,7 +299,7 @@ class GenericInlineFormsetMixin(object):
 class AddExperimentView(edit.CreateView, GenericInlineFormsetMixin):
 
     model = Experiment
-    inline_form_class = DescriptorMapInline
+    inline_form_class = DescriptorMapInlineForm
     inline_model_class = DescriptorMap
     fields = '__all__'
     template_name = 'exp/crud.html'
@@ -355,7 +355,7 @@ class AddExperimentView(edit.CreateView, GenericInlineFormsetMixin):
 class UpdateExperimentView(edit.UpdateView, GenericInlineFormsetMixin):
 
     model = Experiment
-    inline_form_class = DescriptorMapInline
+    inline_form_class = DescriptorMapInlineForm
     inline_model_class = DescriptorMap
     template_name = 'exp/crud.html'
 

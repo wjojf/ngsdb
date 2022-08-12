@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from exp import models as exp_models
-from exp.forms import DescriptorMapInline
+from exp.forms import DescriptorMapInlineForm
 
 # Register your models here.
 
@@ -14,14 +14,20 @@ admin.site.register(exp_models.PrepMethod)
 # EAV Concept Models
 admin.site.register(exp_models.Descriptor)
 admin.site.register(exp_models.DescriptorValue)
-admin.site.register(exp_models.DescriptorMap)
+
+class DescriptorMapAdmin(admin.ModelAdmin):
+    model = exp_models.DescriptorMap
+    list_display = ('desc_name', 'desc_value', 'content_type', 'object_id', 'object')
+    readonly_fields = ('object', )
+
+admin.site.register(exp_models.DescriptorMap, DescriptorMapAdmin)
 
 
 #         --------------Inlines------------
 class DescriptorMapInline(GenericTabularInline):
     model = exp_models.DescriptorMap
-    form = DescriptorMapInline
-    classes = ['wide', 'collapse']
+    form = DescriptorMapInlineForm
+    classes = ['extrapretty']
     extra = 1
     
 

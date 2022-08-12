@@ -141,12 +141,13 @@ class PkToValueField(forms.CharField):
             return value
 
 
-class DescriptorMapInline(ModelForm):
-    desc_value = PkToValueField(model=DescriptorValue, widget=forms.TextInput(attrs={'size':40,}))
+class DescriptorMapInlineForm(ModelForm):
     desc_name = PkToValueField(model=Descriptor, widget=forms.TextInput(attrs={'size':30,}))
+    desc_value = PkToValueField(model=DescriptorValue, widget=forms.TextInput(attrs={'size':40,}))
 
     class Meta:
         fields = '__all__'
+        list_display = ('desc_name', 'desc_value')
         model = DescriptorMap
 
     def clean(self):
@@ -195,7 +196,7 @@ class BaseDescriptorFormSet(BaseGenericInlineFormSet):
 
 DescriptorFormSet = generic_inlineformset_factory(
                                         DescriptorMap,
-                                        form=DescriptorMapInline,
+                                        form=DescriptorMapInlineForm,
                                         formset=BaseDescriptorFormSet
                                         )
 
