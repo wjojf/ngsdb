@@ -3,6 +3,8 @@ from django.views.generic import TemplateView, DetailView
 from matplotlib.pyplot import title
 from ngsdb.settings import STATIC_URL, MEDIA_ROOT
 from exp.models import Experiment
+from typing import *
+import plots.utils as pl_utils
 
 # Visual imports
 import numpy as np
@@ -85,3 +87,27 @@ class VolcanoPlotView(DetailView):
         context['graph'] = figure.to_html()
         return context
 
+
+class PCAPlotView(PlotView):
+    pk_url_kwarg = 'exp_id'
+    model = Experiment
+    context_object_name = 'exp'
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+
+        data_filepath = './static/csv/count_matrix_SAM.csv'
+        pca_df = pl_utils.getPCADataframe(data_filepath)
+
+        if not pca_df.is_empty():
+
+            fig = px.scatter(
+                pca_df,
+                x='PC1',
+                y='PC2',
+                color='Condition'
+            )
+
+            context['graph'] = fig.to_html()
+
+        return context
