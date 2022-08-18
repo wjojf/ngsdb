@@ -154,12 +154,14 @@ class DescriptorMap(models.Model):
     Previously FieldTaxonomyMap.
     Corresponds to TaxonomyMap in django-taxonomy.
     '''
-    desc_value = models.ForeignKey(DescriptorValue, db_index=True,
-                                   on_delete=models.CASCADE)
-    desc_name = models.ForeignKey(Descriptor, db_index=True,
+    desc_name = models.ForeignKey(Descriptor, verbose_name='Descriptor', db_index=True,
                                   on_delete=models.CASCADE)
+    
+    desc_value = models.ForeignKey(DescriptorValue, verbose_name='Descriptor Value', db_index=True,
+                                   on_delete=models.CASCADE)
+
     content_type = models.ForeignKey(
-        ContentType, verbose_name='Django Model', db_index=True, on_delete=models.CASCADE)
+        ContentType, verbose_name='Content Type', db_index=True, on_delete=models.CASCADE)
     
     object_id = models.PositiveIntegerField(db_index=True)
     
