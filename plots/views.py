@@ -99,13 +99,13 @@ class PCAPlotView(PlotView):
         data_filepath = './static/csv/count_matrix_SAM.csv'
         pca_df = pl_utils.getPCADataframe(data_filepath)
 
-        if not pca_df.is_empty():
+        if not pca_df.empty:
 
             fig = px.scatter(
                 pca_df,
                 x='PC1',
                 y='PC2',
-                color='Condition'
+                color='condition'
             )
 
             context['graph'] = fig.to_html()

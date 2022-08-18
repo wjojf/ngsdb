@@ -6,4 +6,5 @@ urlpatterns = [
     path('test-volcano/', plt_views.TestVolcanoPlotView.as_view(), name='test-volcano'),
     path('test-pcaplot', plt_views.TestPCAPlotView.as_view(), name='test-pcaplot'),
     path('volcano/<int:exp_id>', plt_views.VolcanoPlotView.as_view(), name='volcano-plot'),
+    path('pca/<int:exp_id>', plt_views.PCAPlotView.as_view(), name='pca-plot'),
 ]
