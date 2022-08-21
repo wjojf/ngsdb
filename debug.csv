@@ -1,0 +1,35 @@
+,Sample,Condition,Condition2
+0,IS-475_ig01,C.eleA3 NGM HxG,control
+1,IS-475_ig02,C.eleA3 NGM HxG,AICAR+
+2,IS-475_ig03,C.eleA3 NGM HxG,control
+3,IS-475_ig04,C.eleA3 NGM HxG,AICAR+
+4,IS-475_ig05,C.eleA3 NGM HxG,control
+5,IS-475_ig06,C.eleA3 NGM HxG,AICAR+
+6,IS-475_ig07,C.eleA3 NGM HxG,control
+7,IS-475_ig08,C.eleA3 NGM HxG,AICAR+
+8,IS-475_sd01,Pancreas,KO
+9,IS-475_sd02,Pancreas,KO
+10,IS-475_sd03,Pancreas,KO
+11,IS-475_sd04,Pancreas,WT
+12,IS-475_sd05,Pancreas,WT
+13,IS-475_sd06,Pancreas,WT
+14,IS-475_sd07,Pancreas,WT
+15,IS-475_sd08,Pancreas,WT
+16,IS-475_ve01,control,
+17,IS-475_ve02,S1 plasmid,
+18,IS-475_ve03,S1 plasmid + IPTG,
+19,IS-475_ve04,control,
+20,IS-475_ve05,S1 plasmid,
+21,IS-475_ve06,S1 plasmid + IPTG,
+22,IS-475_ve07,control,
+23,IS-475_ve08,control + IPTG,
+24,IS-475_ve09,S1 plasmid,
+25,IS-475_ve10,S1 plasmid + IPTG,
+26,IS-475_ve11,control,
+27,IS-475_ve12,control + IPTG,
+28,IS-475_ve13,S1 plasmid,
+29,IS-475_ve14,S1 plasmid + IPTG,
+30,,,
+31,,,
+32,,,
+33,,,

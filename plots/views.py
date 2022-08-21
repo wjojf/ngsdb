@@ -63,12 +63,12 @@ class TestPCAPlotView(PlotView):
         return context    
 
 
-class VolcanoPlotView(DetailView):
+class VolcanoPlotView(PlotView):
     pk_url_kwarg = 'exp_id'
     model = Experiment
     context_object_name = 'exp'
-    template_name = 'plots/plot.html'
-    
+
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 

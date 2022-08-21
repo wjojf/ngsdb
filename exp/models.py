@@ -194,16 +194,11 @@ class ModelOrganism(models.Model):
         return f"{self.name} #{self.id}"
 
 
-# class ExpConditions(models.Model):
-#     custom_fields = GenericRelation(DescriptorMap)
-
-#     def __str__(self):
-#         return f'Conditions Set # {self.id}'
-
-
 #####################
-#   Final Model     #
+# Experiment Model #
 #####################
+
+
 def experiment_data_filepath(instance, filename):
     # file will be uploaded to MEDIA_ROOT/fileformat
     file_format = filename.split('.')[-1]
@@ -233,4 +228,18 @@ class Experiment(models.Model):
 
     def __str__(self):
         return f'Experiment {self.id}'
-    
+
+
+################
+# Sample model #
+################
+
+
+class Sample(models.Model):
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    sample_value = models.CharField(max_length=100, verbose_name='Sample ID')
+    conditions = GenericRelation(DescriptorMap)
+
+
+    def __str__(self):
+        return f'{self.experiment} - {self.sample_value}'

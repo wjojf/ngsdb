@@ -24,13 +24,13 @@ admin.site.register(exp_models.DescriptorMap, DescriptorMapAdmin)
 
 
 #         --------------Inlines------------
+
 class DescriptorMapInline(GenericTabularInline):
     model = exp_models.DescriptorMap
     form = DescriptorMapInlineForm
     classes = ['extrapretty']
     extra = 1
     
-
 #    ----------------------------------------
 
 class ModelOrganismAdmin(admin.ModelAdmin):
@@ -45,9 +45,20 @@ class ModelOrganismAdmin(admin.ModelAdmin):
 admin.site.register(exp_models.ModelOrganism, ModelOrganismAdmin)
 
 
+class SampleInline(admin.StackedInline):
+    model = exp_models.Sample
+    classes = ['wide', 'collapse', 'extrapretty']
+    extra = 0
+
+@admin.register(exp_models.Sample)
+class SampleAdmin(admin.ModelAdmin):
+    model = exp_models.Sample
+    inlines = [DescriptorMapInline] 
+
+
 class ExperimentAdmin(admin.ModelAdmin):
     model = exp_models.Experiment
-    inlines = [DescriptorMapInline]
+    inlines = [SampleInline]
     exclude = ['conditions', ]
     fieldsets = (
         

@@ -26,7 +26,12 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
     
     def get_fieldset(o, f:str):
         field = o._meta.get_field(f)
-        fvalue = getattr(o, f)
+        
+        try:
+            fvalue = getattr(o, f)
+        except:
+            return ''
+        
         custom_fields_string = ""
         tag_template = '{fn}:<strong>{fv} {cf}</strong>'
 

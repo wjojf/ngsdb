@@ -85,13 +85,11 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
                 request.POST['users']
             ])
         )   # Any other options don't work
-        
-        obj_id = exp_obj.id
-        content_type = ContentType.objects.get_for_model(exp_obj)
+
         files = request.FILES
         metadata_content = files['metadata_file'].open()
 
-        exp_meta._parse_meta(metadata_content, obj_id, content_type)
+        exp_meta._parse_meta(metadata_content, exp_obj)
         
         return redirect('exp_home_view')
    

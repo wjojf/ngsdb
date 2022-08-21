@@ -1,12 +1,13 @@
 from venv import create
 import pandas as pd 
 import exp.models as exp_models
+from django.contrib.contenttypes.models import ContentType
 
 
 EXPERIMENT_DESCRIPTOR_COLUMNS = {
-	'Descriptor': ['sample', 'sample_id', 'sample id', 'sampleid'],
-	'DescriptorValue': ['cond', 'condition', 'cond1', 'cond 1', 'condition1', 'condition 1'],
-	'DescriptorValue2': ['cond2', 'cond 2', 'condition 2', 'condition2']
+	'Sample': ['sample', 'sample_id', 'sample id', 'sampleid'],
+	'Condition': ['cond', 'condition', 'cond1', 'cond 1', 'condition1', 'condition 1'],
+	'Condition2': ['cond2', 'cond 2', 'condition 2', 'condition2']
 }
 
 TEST_DF_ROWS = [
@@ -50,12 +51,12 @@ def match_column(column_name: str):
 	# 	returns ('conditions', True)
 	matched_columns = {}
 
-	for descriptor_col in EXPERIMENT_DESCRIPTOR_COLUMNS:
+	for filtered_col in EXPERIMENT_DESCRIPTOR_COLUMNS:
 		if any(
 			(column_name.lower().strip() == col_example
-			 for col_example in EXPERIMENT_DESCRIPTOR_COLUMNS[descriptor_col])
+			 for col_example in EXPERIMENT_DESCRIPTOR_COLUMNS[filtered_col])
 		):
-			matched_columns = {column_name: descriptor_col}
+			matched_columns = {column_name: filtered_col}
 			break
 	
 	return matched_columns
@@ -78,58 +79,64 @@ def filter_df(df):
 	return output
 
 
-def create_descriptors(df, desc_name_column, desc_val_column, content_type, obj_id):
-	# Creates DescriptorMap objects from DataFrame
+def create_descriptors(df, sample_column, descriptor_column, exp_obj):
+	'''
+ 		Creates Sample & DescriptorMap objects from filtered NextSeq DataFrame
+	'''	
 	# df - DataFrame with at least two columns ('Descriptor' & 'DescriptorValue')
 	# desc_name_column: str:  column containing descriptor names
 	# desc_val_column: str: column containing descriptor values
 	# content_type: ContentType object for DescriptorMap 
-	# obj_id: int object_id for DescriptorMap object 
+	# exp_obj_id: Experiment object id  
 
 	
-	if (desc_name_column not in df.columns) or (desc_val_column not in df.columns):
+	if (sample_column not in df.columns) or (descriptor_column not in df.columns):
 		return 
-	
 
-	for desc_name, desc_value in zip(df[desc_name_column], df[desc_val_column]):
-		
-		desc_name = str(desc_name)
-		desc_value = str(desc_value)
-  
-		descriptor_obj, desc_created = exp_models.Descriptor.objects.get_or_create(
-			name=desc_name.lower().strip()
+	descriptor_obj, descriptor_obj_created = exp_models.Descriptor.objects.get_or_create(
+		name=descriptor_column
+	)
+	sample_content_type = ContentType.objects.get_for_model(exp_models.Sample)
+
+	for sample_value, descriptor_value in zip(df[sample_column], df[descriptor_column]):
+     
+		sample_value = str(sample_value)
+		descriptor_value = str(descriptor_value)
+   
+		sample_obj, sample_created = exp_models.Sample.objects.get_or_create(
+			experiment=exp_obj,
+			sample_value=sample_value
 		)
 
-		
-		desc_value_obj, desc_val_created = exp_models.DescriptorValue.objects.get_or_create(
+		desc_value_obj, desc_value_created = exp_models.DescriptorValue.objects.get_or_create(
 			descriptor=descriptor_obj,
-			value=desc_value.lower().strip()
+			value=descriptor_value
 		)
 
-
-
-		descriptormap_obj, descmap_created = exp_models.DescriptorMap.objects.get_or_create(
+		desc_map_obj, desc_map_created = exp_models.DescriptorMap.objects.get_or_create(
 			desc_name=descriptor_obj,
 			desc_value=desc_value_obj,
-			content_type=content_type,
-			object_id=obj_id
+			content_type=sample_content_type,
+			object_id = sample_obj.id
 		)
 
+	
+#################
+# Main Function #
+#################
 
-									#################
-									# Main Function #
-									#################
 
-
-def _parse_meta(content, obj_id, content_type):
+def _parse_meta(content, exp_obj):
     
- 
-    df = load_df_from_content(content)
-
-    filtered_df = filter_df(df)
-
-    descriptor_value_columns = [col for col in filtered_df.columns if 'DescriptorValue' in col]
-
-    
-    for descriptor_value_column in descriptor_value_columns:
-        create_descriptors(filtered_df, 'Descriptor', descriptor_value_column, content_type, obj_id)
+	df = load_df_from_content(content)
+	filtered_df = filter_df(df)
+	
+	if 'Sample' not in filtered_df.columns:
+		return 
+	
+	descriptor_columns = (col for col in filtered_df.columns if col != 'Sample')
+	
+	for descriptor_column in descriptor_columns:
+		create_descriptors(filtered_df, 'Sample', descriptor_column, exp_obj)
+	
+	
