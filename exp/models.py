@@ -224,8 +224,7 @@ class Experiment(models.Model):
     prep_method = models.ForeignKey(
         PrepMethod, null=True, on_delete=models.SET_NULL, verbose_name='Preparation Method')
     
-    conditions = GenericRelation(DescriptorMap)
-
+    
     def __str__(self):
         return f'Experiment {self.id}'
 

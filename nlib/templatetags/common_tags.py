@@ -10,7 +10,7 @@ from django.template.defaultfilters import date, escape, capfirst
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-from exp.models import DescriptorMap
+from exp.models import DescriptorMap, Sample
 
 from nlib.views import ALLOWED_LOOKUP_TYPES
 
@@ -39,12 +39,6 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         if not fvalue or f == 'id' or 'filepath' in f:
             return ''
         
-        # FIXME: hardcode
-        if f == 'conditions':
-            fn = field.verbose_name
-            fv = ', '.join([str(desc_map) for desc_map in fvalue.all()])
-            return tag_template.format(fn=fn, fv=fv, cf=custom_fields_string)  
-
         # Render fields with custom_fields attr(ModelOrganism f.e)
         if hasattr(fvalue, 'custom_fields'):  
             if bool(fvalue.custom_fields.all()):
@@ -53,6 +47,31 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
             
         return tag_template.format(
             fn=field.verbose_name, fv=fvalue, cf=custom_fields_string)
+    
+    
+    def get_samples_fieldset(samples_queryset):
+        
+        if len(samples_queryset) == 0:
+            return ''
+        
+        output = '<table>'
+        
+        # Add Column Names
+        output += '<tr><th>Sample ID</th><th>Condition 1</th><th>Condition 2</th></tr>'
+        
+        for sample_obj in samples_queryset:
+            sample_value = sample_obj.sample_value
+            sample_descriptors = [str(desc_map.desc_value) for desc_map in sample_obj.conditions.all()]
+            tr_tag = '<tr>'
+            
+            for td in (sample_value, *sample_descriptors):
+                tr_tag += f'<td>{td}</td>' 
+            
+            tr_tag += '</tr>'
+            output += tr_tag
+            
+        output += '</table>'
+        return output        
         
                     
     tpl = '<{tag} class="{css_class}">{fieldset}</{tag}>'
@@ -62,6 +81,11 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         css_class=css_class,
         fieldset=get_fieldset(obj, f.name)) for f in fields
     ]
+    
+    samples = Sample.objects.filter(
+        experiment=obj
+    )
+    lines.append(get_samples_fieldset(samples))
     
     return mark_safe(''.join(lines))
 

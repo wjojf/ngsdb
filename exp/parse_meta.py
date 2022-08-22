@@ -37,7 +37,7 @@ TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
 
 def load_df_from_content(content):
 	df = pd.read_csv(content, sep=',')
-	return df
+	return df.dropna()
 
 
 def match_column(column_name: str):
