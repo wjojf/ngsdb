@@ -35,8 +35,8 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         custom_fields_string = ""
         tag_template = '{fn}:<strong>{fv} {cf}</strong>'
 
-        # skip empty values or id field
-        if not fvalue or f == 'id' or 'filepath' in f:
+        # skip empty values or id field or filepath/users field
+        if not fvalue or f == 'id' or 'filepath' in f or f == 'users':
             return ''
         
         # Render fields with custom_fields attr(ModelOrganism f.e)
@@ -51,7 +51,7 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
     
     def get_samples_fieldset(samples_queryset):
         
-        if len(samples_queryset) == 0:
+        if not bool(samples_queryset):
             return ''
         
         output = '<table>'
@@ -81,6 +81,8 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         css_class=css_class,
         fieldset=get_fieldset(obj, f.name)) for f in fields
     ]
+    
+    # Handle Sample fields
     
     samples = Sample.objects.filter(
         experiment=obj

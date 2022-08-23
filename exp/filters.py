@@ -1,16 +1,10 @@
 import django_filters
 from django.contrib.contenttypes.models import ContentType
-from exp.models import Descriptor, DescriptorMap, Experiment
+from exp.models import Descriptor, DescriptorMap, Experiment, Sample
 
 
 class ExperimentFilter(django_filters.FilterSet):
     
-    conditions = django_filters.ModelChoiceFilter(
-        queryset=DescriptorMap.objects.filter(
-            content_type=ContentType.objects.get_for_model(Experiment)
-        )
-    )
-
     class Meta:
         model = Experiment
         fields = '__all__'

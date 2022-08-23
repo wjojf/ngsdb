@@ -1,7 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% if graph %}
-        {{graph|safe}}
-    {% endif %}
+    {% if is_pca %}
+        {% include 'plots/pca_plot.html' %}    
+    {% else%}
+        {% if graph %}
+            {{graph|safe}}
+        {% endif %}
+    {% endif %}    
+
 {%endblock content%}

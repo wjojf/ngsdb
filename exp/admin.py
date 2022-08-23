@@ -3,7 +3,6 @@ from django.contrib.contenttypes.admin import GenericTabularInline
 from exp import models as exp_models
 from exp.forms import DescriptorMapInlineForm
 
-# Register your models here.
 
 # Experiment models 
 admin.site.register(exp_models.ExpPlatform)
@@ -15,6 +14,7 @@ admin.site.register(exp_models.PrepMethod)
 admin.site.register(exp_models.Descriptor)
 admin.site.register(exp_models.DescriptorValue)
 
+
 class DescriptorMapAdmin(admin.ModelAdmin):
     model = exp_models.DescriptorMap
     list_display = ('desc_name', 'desc_value', 'content_type', 'object_id', 'object')
@@ -24,14 +24,19 @@ admin.site.register(exp_models.DescriptorMap, DescriptorMapAdmin)
 
 
 #         --------------Inlines------------
-
 class DescriptorMapInline(GenericTabularInline):
     model = exp_models.DescriptorMap
     form = DescriptorMapInlineForm
     classes = ['extrapretty']
     extra = 1
-    
+
+
+class SampleInline(admin.StackedInline):
+    model = exp_models.Sample
+    classes = ['wide', 'collapse', 'extrapretty']
+    extra = 0
 #    ----------------------------------------
+
 
 class ModelOrganismAdmin(admin.ModelAdmin):
     model = exp_models.ModelOrganism
@@ -41,14 +46,8 @@ class ModelOrganismAdmin(admin.ModelAdmin):
             'fields': ['name']
         }),
     )
-
 admin.site.register(exp_models.ModelOrganism, ModelOrganismAdmin)
 
-
-class SampleInline(admin.StackedInline):
-    model = exp_models.Sample
-    classes = ['wide', 'collapse', 'extrapretty']
-    extra = 0
 
 @admin.register(exp_models.Sample)
 class SampleAdmin(admin.ModelAdmin):
