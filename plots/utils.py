@@ -14,7 +14,7 @@ def getPCADataframe(csv_filepath):
     
     try:
         df = loadDF(csv_filepath)
-    except:
+    except Exception as e:
         return pd.DataFrame()
 
     X_std = StandardScaler().fit_transform(df.values.T)

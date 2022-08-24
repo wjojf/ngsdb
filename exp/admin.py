@@ -74,5 +74,4 @@ class ExperimentAdmin(admin.ModelAdmin):
         ),
         
     )
-
 admin.site.register(exp_models.Experiment, ExperimentAdmin)

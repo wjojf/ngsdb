@@ -50,11 +50,13 @@ class FilteredModelView(list.ListView, edit.BaseFormView):
 
     search_form_class = None
     model = None
+
     
     def __init__(self, **kwargs):
         kwargs.update({'filters': {},})
         super(FilteredModelView, self).__init__(**kwargs)
         self.form_class = self.search_form_class
+
 
     def get(self, request, *args, **kwargs):
         # GET dictionary needs to be copied if we want to modify it
@@ -101,6 +103,7 @@ class FilteredModelView(list.ListView, edit.BaseFormView):
             qs = self.model._default_manager.all()
             self.filters.clear()
         return qs
+
 
     def get_context_data(self, **kwargs):
         context = super(FilteredModelView, self).get_context_data(**kwargs)

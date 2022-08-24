@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.utils.encoding import smart_str
 
+
 def build_tabs_dict(request, tabs):
     match = resolve(request.path)
     tab_dict = {}
@@ -18,6 +19,7 @@ def build_tabs_dict(request, tabs):
             view_name = view
         tab_dict[tab] = [reverse(view_name, args=args, kwargs=kwargs), is_active]
     return tab_dict
+
 
 def get_filters(params):
     '''

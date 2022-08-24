@@ -14,7 +14,9 @@ from exp.models import DescriptorMap, Sample
 
 from nlib.views import ALLOWED_LOOKUP_TYPES
 
+
 register = template.Library()
+
 
 @register.simple_tag(takes_context=True)
 def render_obj_users(context, obj, tag='p'):
@@ -162,6 +164,7 @@ def get_objects_by_user(context, user):
     object_list = context['object_list']
     return object_list.filter(user=user)
 
+
 class RenderInputNode(template.Node):
     def __init__(self, input_type, name, value):
         self.input_type = input_type
@@ -176,6 +179,7 @@ class RenderInputNode(template.Node):
         except template.VariableDoesNotExists:
             value = self._value
         return t % (self.input_type, self.name, value)
+
 
 @register.tag(name='render_input')
 def do_render_input(parser, token):
@@ -197,6 +201,7 @@ def do_render_input(parser, token):
     except ValueError:
         raise template.TemplateSyntaxError('%r tag requires exactly three arguments' % tag_name)
     return RenderInputNode(input_type, name, value)
+
 
 @register.simple_tag()
 def list_filter(field, klass, *args, **kwargs):
@@ -245,19 +250,23 @@ def list_filter(field, klass, *args, **kwargs):
         result.append(t % s)
     return mark_safe(''.join(result))
 
+
 @register.filter
 def edit_link(obj):
     edit_link = obj.get_absolute_url().split('/')
     edit_link.insert(-2, 'edit')
     return '/'.join(edit_link)
 
+
 @register.filter
 def get_month(date):
     return date.strftime('%m')
 
+
 @register.filter
 def get_day(date):
     return date.strftime('%d')
+
 
 @register.filter
 def get_str_year(date):
@@ -279,9 +288,11 @@ def render_dict(value, tag='li'):
             res.append(tmpl % (tag, field, val, tag))
     return mark_safe(''.join(res))
 
+
 @register.filter(name='add_css')
 def add_css(field, css):
     return field.as_widget(attrs={'class': css})
+
 
 @register.simple_tag(takes_context=True)
 def render_tabs(context):

@@ -1,6 +1,7 @@
 from django.db import models, transaction, IntegrityError
 from django.template.defaultfilters import slugify
 
+
 class SluggedModel(models.Model):
     '''
     An abstract model that provides an automatic slug field.
@@ -53,6 +54,7 @@ class SluggedModel(models.Model):
         else:
             return super(SluggedModel, self).save(*args, **kwargs)
 
+
 class TimestampedSluggedModel(SluggedModel):
     '''
     An abstract model that automatically provides `created`,
@@ -63,6 +65,7 @@ class TimestampedSluggedModel(SluggedModel):
 
     class Meta:
         abstract = True
+
 
 class TimestampedModel(models.Model):
     '''

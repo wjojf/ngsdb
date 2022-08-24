@@ -29,50 +29,50 @@ class UploadForm(forms.Form):
             queryset=User.objects.all())
 
 
-class SearchForm(forms.Form):
-    '''
-    Search form for museum item list.
-    '''
+# class SearchForm(forms.Form):
+#     '''
+#     Search form for museum item list.
+#     '''
     
-    project = forms.ModelChoiceField(
-        queryset=Project.objects.all(),
-        widget=InlineInput(attrs={
-                'css_class': 'col-xs-2',
-                'placeholder': 'project ...', 
-            }
-        ),
-        required=False
-    )
+#     project = forms.ModelChoiceField(
+#         queryset=Project.objects.all(),
+#         widget=InlineInput(attrs={
+#                 'css_class': 'col-xs-2',
+#                 'placeholder': 'project ...', 
+#             }
+#         ),
+#         required=False
+#     )
 
-    platform = forms.ModelChoiceField(
-        queryset=ExpPlatform.objects.all(),
-        widget=InlineInput(attrs={
-                'css_class': 'col-xs-2',
-                'placeholder': 'platform ...', 
-            }
-        ),
-        required=False
-    )
+#     platform = forms.ModelChoiceField(
+#         queryset=ExpPlatform.objects.all(),
+#         widget=InlineInput(attrs={
+#                 'css_class': 'col-xs-2',
+#                 'placeholder': 'platform ...', 
+#             }
+#         ),
+#         required=False
+#     )
 
-    organism = forms.ModelChoiceField(
-        queryset=ModelOrganism.objects.all(),
-        widget=InlineInput(attrs={
-                'css_class': 'col-xs-2',
-                'placeholder': 'organism ...', 
-            }
-        ),
-        required=False
-    )
+#     organism = forms.ModelChoiceField(
+#         queryset=ModelOrganism.objects.all(),
+#         widget=InlineInput(attrs={
+#                 'css_class': 'col-xs-2',
+#                 'placeholder': 'organism ...', 
+#             }
+#         ),
+#         required=False
+#     )
 
-    qfield = forms.ModelChoiceField(queryset=Descriptor.objects.all(),
-        widget=InlineSelect(attrs={
-            'css_class': 'col-xs-2',
-            }),
-        required=False)
-    qvalue = forms.CharField(max_length=255, required=False,
-        widget=InlineInput(attrs={
-            'css_class': 'col-xs-2',
-            'placeholder': 'descriptor value...',}))
+#     qfield = forms.ModelChoiceField(queryset=Descriptor.objects.all(),
+#         widget=InlineSelect(attrs={
+#             'css_class': 'col-xs-2',
+#             }),
+#         required=False)
+#     qvalue = forms.CharField(max_length=255, required=False,
+#         widget=InlineInput(attrs={
+#             'css_class': 'col-xs-2',
+#             'placeholder': 'descriptor value...',}))
 
 
 class UpdateCustomForm(forms.Form):
@@ -121,6 +121,7 @@ class UpdateCommonForm(forms.Form):
 
         return cleaned_data
 
+
 class PkToValueField(forms.CharField):
     '''
     Custom field used to render related objects in a textinput instead of select widget.
@@ -167,6 +168,7 @@ class DescriptorMapInlineForm(ModelForm):
         self.cleaned_data['desc_value'] = val
         return self.cleaned_data
 
+
 class BaseDescriptorFormSet(BaseGenericInlineFormSet):
 
     def __init__(self, data=None, files=None, instance=None, save_as_new=None,
@@ -199,6 +201,7 @@ DescriptorFormSet = generic_inlineformset_factory(
                                         form=DescriptorMapInlineForm,
                                         formset=BaseDescriptorFormSet
                                         )
+
 
 class BaseUploadedFormSet(BaseModelFormSet):
 
