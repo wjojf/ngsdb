@@ -84,9 +84,7 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
     
     # Handle Sample fields
     
-    samples = Sample.objects.filter(
-        experiment=obj
-    )
+    samples = obj.sample_set.all()
     lines.append(get_samples_fieldset(samples))
     
     return mark_safe(''.join(lines))
