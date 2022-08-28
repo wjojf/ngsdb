@@ -63,7 +63,7 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         
         for sample_obj in samples_queryset:
             sample_value = sample_obj.sample_value
-            sample_descriptors = [str(desc_map.desc_value) for desc_map in sample_obj.conditions.all()]
+            sample_descriptors = [str(desc_map.descriptor_name_value.desc_value) for desc_map in sample_obj.conditions.all()]
             tr_tag = '<tr>'
             
             for td in (sample_value, *sample_descriptors):

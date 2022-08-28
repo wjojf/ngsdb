@@ -13,11 +13,12 @@ admin.site.register(exp_models.PrepMethod)
 # EAV Concept Models
 admin.site.register(exp_models.Descriptor)
 admin.site.register(exp_models.DescriptorValue)
+admin.site.register(exp_models.DescriptorNameValue)
 
 
 class DescriptorMapAdmin(admin.ModelAdmin):
     model = exp_models.DescriptorMap
-    list_display = ('desc_name', 'desc_value', 'content_type', 'object_id', 'object')
+    list_display = ('descriptor_name_value', 'content_type', 'object_id', 'object')
     readonly_fields = ('object', )
 
 admin.site.register(exp_models.DescriptorMap, DescriptorMapAdmin)

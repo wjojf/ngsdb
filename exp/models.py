@@ -9,75 +9,7 @@ from django.db.models import Q
 #     Managers         #
 ########################
 
-
-class DescriptorMapManager(models.Manager):
-    '''
-    Corresponds to TaxonomyManager in django-taxonomy.
-    '''
-
-    def update_for_object(self, obj, **kwargs):
-        '''
-        Sets custom field types and their values for obj.
-        kwargs provides Descriptor:DescriptorValue pairs.
-        If the provided Descriptor or DescriptorValue does not exist
-        it will be created.
-        '''
-
-        current_desc = self.get_for_object(
-            obj).values_list('desc_name__name', flat=True)
-
-        for desc, desc_val in kwargs.items():
-            d = desc.lower()
-            if d in current_desc and desc_val == '':
-                DescriptorValue._default_manager.remove_for_object(obj, d)
-            else:
-                # FIXME: This is bad, because it doesn't check if field_val is the same...
-                # But it is enforced at the database level through unique constraints.
-                DescriptorValue._default_manager.add_for_object(
-                    obj, d, desc_val)
-
-    def get_by_model(self, queryset_or_model, filters={}):
-
-        try:
-            queryset = queryset_or_model._default_manager.objects.all()
-        except AttributeError:
-            queryset = queryset_or_model
-        # FIXME: ``descriptor`` is hardcoded here - needs to be changed!
-        desc = filters.get('descriptor', '')
-        desc_value_qs = DescriptorValue.objects.filter(
-            value__icontains=filters.get('value', ''), descriptor=desc)
-        desc_value = self.filter(desc_value__in=desc_value_qs, desc_name=desc,
-                                 object_id__in=queryset.values_list('id', flat=True))
-        return [ct.object for ct in desc_value]
-
-    def get_for_object(self, obj):
-        '''
-        Retrieves DescriptorMap instances for given object.
-        '''
-        ctype = ContentType.objects.get_for_model(obj)
-        return self.filter(content_type__pk=ctype.pk, object_id=obj.pk)
-
-
-class DescriptorValueManager(models.Manager):
-
-    def remove_for_object(self, obj, desc_name, val=None):
-        if val is not None:
-            DescriptorMap._default_manager.get_for_object(obj).filter(
-                desc_name__name=desc_name, desc_value__value=val).delete()
-        else:
-            DescriptorMap._default_manager.get_for_object(obj).filter(
-                desc_name__name=desc_name).delete()
-
-    def add_for_object(self, obj, desc_name, val):
-        '''
-        Creates new custom DescriptorValue for a given obj and Descriptor.
-        '''
-        desc, created = Descriptor._default_manager.get_or_create(
-            name=desc_name)
-        value, created = self.get_or_create(value=val, desriptor=desc)
-        ctype = ContentType.objects.get_for_model(obj)
-        DescriptorMap._default_manager.get_or_create(
-            desc_name=desc, desc_value=value, content_type=ctype, object_id=obj.pk)
+# TODO: 
 
 
 #####################
@@ -131,35 +63,36 @@ class Descriptor(models.Model):
 
 
 class DescriptorValue(models.Model):
-    '''
-    Values of custom descriptors are stored here.
-    Previously FieldValue
-    Corresponds to TaxonomyTerm in django-taxonomy.
-    '''
-    descriptor = models.ForeignKey(Descriptor, on_delete=models.CASCADE)
     value = models.CharField(db_index=True, max_length=255)
 
-    objects = DescriptorValueManager()
-
     class Meta:
-        unique_together = ('descriptor', 'value')
+        unique_together = ('value',)
 
     def __str__(self):
         return self.value
 
 
-class DescriptorMap(models.Model):
-    '''
-    Mapping between content (Model Organism) and custom descriptors/values.
-    Previously FieldTaxonomyMap.
-    Corresponds to TaxonomyMap in django-taxonomy.
-    '''
-    desc_name = models.ForeignKey(Descriptor, verbose_name='Descriptor', db_index=True,
-                                  on_delete=models.CASCADE)
+class DescriptorNameValue(models.Model):
+    desc_name = models.ForeignKey(Descriptor, on_delete=models.CASCADE)
+    desc_value = models.ForeignKey(DescriptorValue, on_delete=models.CASCADE)
     
-    desc_value = models.ForeignKey(DescriptorValue, verbose_name='Descriptor Value', db_index=True,
-                                   on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ('desc_name', 'desc_value')
+    
+    def __str__(self):
+        return f'{self.desc_name}:={self.desc_value}'
 
+
+
+class DescriptorMap(models.Model):
+
+    descriptor_name_value = models.ForeignKey(
+        DescriptorNameValue,
+        verbose_name='Descriptor Name & Value Pair',
+        on_delete=models.CASCADE,
+        default=None
+    )
+    
     content_type = models.ForeignKey(
         ContentType, verbose_name='Content Type', db_index=True, on_delete=models.CASCADE)
     
@@ -167,14 +100,12 @@ class DescriptorMap(models.Model):
     
     object = GenericForeignKey('content_type', 'object_id')
 
-    objects = DescriptorMapManager()
-
     class Meta:
-        unique_together = ('desc_value', 'desc_name',
+        unique_together = ('descriptor_name_value',
                            'content_type', 'object_id')
 
     def __str__(self):
-        return f'{self.desc_name} := {self.desc_value}'
+        return str(self.descriptor_name_value)
 
 
 class ModelOrganism(models.Model):

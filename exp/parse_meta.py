@@ -1,3 +1,4 @@
+from cmath import isnan
 from venv import create
 import pandas as pd 
 import exp.models as exp_models
@@ -37,7 +38,7 @@ TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
 
 def load_df_from_content(content):
 	df = pd.read_csv(content, sep=',')
-	return df.dropna()
+	return df
 
 
 def match_column(column_name: str):
@@ -99,7 +100,10 @@ def create_descriptors(df, sample_column, descriptor_column, exp_obj):
 	sample_content_type = ContentType.objects.get_for_model(exp_models.Sample)
 
 	for sample_value, descriptor_value in zip(df[sample_column], df[descriptor_column]):
-     
+		
+		if pd.isnull(sample_value) or pd.isnull(descriptor_value):
+			continue
+  
 		sample_value = str(sample_value)
 		descriptor_value = str(descriptor_value)
    
@@ -108,14 +112,19 @@ def create_descriptors(df, sample_column, descriptor_column, exp_obj):
 			sample_value=sample_value
 		)
 
-		desc_value_obj, desc_value_created = exp_models.DescriptorValue.objects.get_or_create(
-			descriptor=descriptor_obj,
+		desc_value_obj, desc_value_created = exp_models.DescriptorValue.\
+      	objects.get_or_create(
 			value=descriptor_value
 		)
 
-		desc_map_obj, desc_map_created = exp_models.DescriptorMap.objects.get_or_create(
+		desc_name_value_obj, desc_name_value_created = exp_models.DescriptorNameValue.\
+      	objects.get_or_create(
 			desc_name=descriptor_obj,
-			desc_value=desc_value_obj,
+			desc_value=desc_value_obj
+		)
+
+		desc_map_obj, desc_map_created = exp_models.DescriptorMap.objects.get_or_create(
+			descriptor_name_value=desc_name_value_obj,
 			content_type=sample_content_type,
 			object_id = sample_obj.id
 		)

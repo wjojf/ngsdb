@@ -21,8 +21,8 @@ from django.contrib.contenttypes.forms import generic_inlineformset_factory
 from nlib.views import FilteredModelView
 from nlib.utils import build_tabs_dict
 
-from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap
-from exp.forms import DescriptorMapInlineForm, SearchForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
+from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap, Sample
+from exp.forms import DescriptorMapInlineForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
 from exp.filters import ExperimentFilter
 import exp.parse_meta as exp_meta
 
@@ -217,8 +217,11 @@ class HomeView(list.ListView):
     
     def get_queryset(self):
         if '_clear' not in self.request.GET:
-            return self.filterset_class(self.request.GET, queryset=self.model.objects.all()).qs
+            sample_qs = self.filterset_class(self.request.GET, queryset=Sample.objects.all()).qs
             
+            exp_qs = sample_qs.values_list('experiment').distinct('experiment')
+            return Experiment.objects.filter(pk__in=exp_qs)
+             
         return super().get_queryset()        
 
 

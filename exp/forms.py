@@ -143,32 +143,13 @@ class PkToValueField(forms.CharField):
 
 
 class DescriptorMapInlineForm(ModelForm):
-    desc_name = PkToValueField(model=Descriptor, widget=forms.TextInput(attrs={'size':30,}))
-    desc_value = PkToValueField(model=DescriptorValue, widget=forms.TextInput(attrs={'size':40,}))
 
     class Meta:
-        fields = '__all__'
-        list_display = ('desc_name', 'desc_value')
         model = DescriptorMap
+        fields = '__all__'
+        list_display = ('desc_name_value',)
 
-    def clean(self):
-        '''
-        Checks if the DescriptorValue of appropriate Descriptor exists
-        in database. If it doesn't, creates a new one.
-        '''
-        lookup_params = {}
-        name = self.cleaned_data['desc_name'].strip().lower()
-        value = self.cleaned_data['desc_value'].strip().lower()
-        lookup_params['value'] = value
-        lookup_params['descriptor'], created = Descriptor.objects.get_or_create(name=name)
-        # This is probably not good. But it works.
-        # It would be more appropriate to create new FieldValue in manager.
-        self.cleaned_data['desc_name'] = lookup_params['descriptor']
-        val, created = DescriptorValue.objects.get_or_create(**lookup_params)
-        self.cleaned_data['desc_value'] = val
-        return self.cleaned_data
-
-
+   
 class BaseDescriptorFormSet(BaseGenericInlineFormSet):
 
     def __init__(self, data=None, files=None, instance=None, save_as_new=None,
