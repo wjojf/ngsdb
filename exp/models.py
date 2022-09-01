@@ -9,6 +9,8 @@ from django.db.models import Q
 #       Models      #
 #####################
 
+class HandledURL(models.Model):
+    url = models.URLField(verbose_name='Experiment folder url', unique=True)
 
 class Project(models.Model):
     title = models.CharField(max_length=150)
@@ -35,6 +37,7 @@ class ExpPlatform(models.Model):
 
     def __str__(self):
         return f'{self.title}-{self.n_reads}-{self.length_libtype}'
+
 
 ##############################
 #   EAV for ModelOrganism    #
@@ -75,7 +78,6 @@ class DescriptorNameValue(models.Model):
     
     def __str__(self):
         return f'{self.desc_name}:={self.desc_value}'
-
 
 
 class DescriptorMap(models.Model):

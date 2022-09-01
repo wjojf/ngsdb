@@ -15,6 +15,7 @@ dash-bio = "*"
 "backports.zoneinfo" = "*"
 django-filter = "*"
 ipython = "*"
+django-user-sessions = "*"
 
 [dev-packages]
 

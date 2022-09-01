@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
 {% block extrastyle %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}" />
 {% endblock %}
 {% block content %}
     {% if form.errors %}

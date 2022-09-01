@@ -1,12 +1,14 @@
 from django import forms
 from django.forms import ModelForm
 from django.forms.models import modelformset_factory, BaseModelFormSet
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.forms import BaseGenericInlineFormSet, generic_inlineformset_factory
+from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrganism, Descriptor, DescriptorMap
 
-from nlib.forms import InlineInput, InlineSelect
-from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrganism, Descriptor, DescriptorMap, DescriptorValue
+
+class ImportForm(forms.Form):
+    ''''''
+    folder_url=forms.URLField(label=u'Google drive folder URL')
 
 
 class UploadForm(forms.Form):
@@ -28,7 +30,6 @@ class UploadForm(forms.Form):
     users = forms.ModelMultipleChoiceField(label='Users',
             queryset=User.objects.all())
 
-
 class UpdateCustomForm(forms.Form):
     '''
     Descriptor name and descriptor value for updating MuseumItem
@@ -36,7 +37,6 @@ class UpdateCustomForm(forms.Form):
     '''
     name = forms.ModelChoiceField(label=u'Descriptor name', queryset=Descriptor.objects.all())
     value = forms.CharField(label=u'', max_length=255, required=False)
-
 
 class UpdateCommonForm(forms.Form):
     '''
@@ -76,7 +76,6 @@ class UpdateCommonForm(forms.Form):
 
         return cleaned_data
 
-
 class PkToValueField(forms.CharField):
     '''
     Custom field used to render related objects in a textinput instead of select widget.
@@ -96,14 +95,12 @@ class PkToValueField(forms.CharField):
         except Exception:
             return value
 
-
 class DescriptorMapInlineForm(ModelForm):
 
     class Meta:
         model = DescriptorMap
         fields = '__all__'
         list_display = ('desc_name_value',)
-
    
 class BaseDescriptorFormSet(BaseGenericInlineFormSet):
 
@@ -137,7 +134,6 @@ DescriptorFormSet = generic_inlineformset_factory(
                                         form=DescriptorMapInlineForm,
                                         formset=BaseDescriptorFormSet
                                         )
-
 
 class BaseUploadedFormSet(BaseModelFormSet):
 
@@ -186,7 +182,6 @@ class BaseUploadedFormSet(BaseModelFormSet):
         for form in set(self.initial_forms + self.saved_forms):
             for inline in form.inlines:
                 inline.save(commit=commit)
-
 
 class ModelOrganismForm(ModelForm):
     

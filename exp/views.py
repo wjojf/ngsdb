@@ -7,12 +7,16 @@ from django.utils.encoding import smart_str
 from django.forms.models import modelform_factory, modelformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
+
 from nlib.utils import build_tabs_dict
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap, Sample
-from exp.forms import DescriptorMapInlineForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
+from exp.forms import DescriptorMapInlineForm, UploadForm, ImportForm
 from exp.filters import ExperimentFilter
 import exp.parse_meta as exp_meta
 
@@ -23,27 +27,18 @@ EXP_TAB = {
 }
 
 
+def logout_user(request):
+    logout(request)
+    return redirect('exp_home_view')
+
+
+class MyLoginView(LoginView):
+    template_name = 'login.html'
+
+
 class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
-    '''
-    TODO:
-
-    Handles uploading of a .csv file.
-    First renders the template with UploadForm. When the form is POSTed
-    uploads the file, parses its contents and stores it in `self.uploaded`.
-
-    Then renders the formset using the data stored in `self.uploaded`
-    as `initial`.
-
-    Each form of the formset represents a record parsed from the .csv file.
-    Custom fields are handled as GenericInlineFormsets associated with
-    every form in the original formset.
-
-    This formset(s) is then POSTed to another view, `ImportCSVView` that
-    handles the actual saving of the imported itmes to the database.
-    '''
-
+ 
     template_name = 'exp/upload.html'
-    import_template_name = 'exp/import.html'
     form_class = UploadForm
 
 
@@ -118,9 +113,37 @@ class BaseActionView(list.ListView, edit.BaseFormView):
 
 ##########################################################################
 
-class ImportCSVView(View):
-    pass 
 
+class ImportCSVView(edit.BaseFormView, TemplateResponseMixin):
+    '''
+    Uploading multiple experiments. Idea:
+        - Get GoogleDrive folder url / local folder (How?)
+        - Find folders with patter 'DD_MM_YYYY_RNA-Seq' which haven't been seen yet. 
+            (How can we know if the folder has already been checked?)
+        
+        for folder in found_folders:
+            - Find MetaData file by pattern
+                - Find RawData file pattern
+                    - Create experiment obj (call UploadCSVView.post() from here?)
+
+    ''' 
+    template_name = 'exp/upload.html'
+    form_class = ImportForm
+
+    def get_context_data(self, **kwargs):
+        context = super(ImportCSVView, self).get_context_data(**kwargs)
+        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
+
+        if self.request.method == 'GET':
+            context['submit_line'] = (
+                {'name': 'clear', 'class': 'btn-default', },
+                {'name': 'upload', 'class': 'btn-success', },
+            )
+
+        return context
+    
+    
+    
 ##########################################################################
 
 class HomeView(list.ListView):

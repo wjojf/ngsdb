@@ -10,6 +10,8 @@ urlpatterns = [
         name='exp_create_view'),
     path('import/', views.ImportCSVView.as_view(),
         name='exp_import_view'),
+    path('login/', views.MyLoginView.as_view(), name='login'),
+    path('logout', views.logout_user, name='logout'),
     #path('create-descriptor', views.DescriptorMapFormView.as_view(), name='create-descriptor'),
     
 ]
