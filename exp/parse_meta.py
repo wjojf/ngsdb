@@ -1,8 +1,6 @@
-from cmath import isnan
-from venv import create
+from django.contrib.contenttypes.models import ContentType
 import pandas as pd 
 import exp.models as exp_models
-from django.contrib.contenttypes.models import ContentType
 
 
 EXPERIMENT_DESCRIPTOR_COLUMNS = {
@@ -10,30 +8,6 @@ EXPERIMENT_DESCRIPTOR_COLUMNS = {
 	'Condition': ['cond', 'condition', 'cond1', 'cond 1', 'condition1', 'condition 1'],
 	'Condition2': ['cond2', 'cond 2', 'condition 2', 'condition2']
 }
-
-TEST_DF_ROWS = [
-	(f'ig0{i}', f'L{i}', f'L{i}_{i}')
-	for i in range(1, 4)
-]
-
-TEST_DF_COLUMNS = ['SAMPLE', 'CONDITION 1', 'COND 2']
-
-TEST_DF = pd.DataFrame(TEST_DF_ROWS, columns=TEST_DF_COLUMNS)
-
-# Sample Cond                    Descriptor   DescriptorValue
-# ig01	 L1							ig01	 L1
-# ig02	 L2			-----> 			...      ...
-# ig03	 L3							...      ...
-# ig04	 L4							...      ...
-# ig05   L5							ig05      L5
-
-
-# Sample Cond Cond 2                  Descriptor   DescriptorValue  DescriptorValue2
-# ig01	 L1	  L1_1						ig01	  			L1          L1_1
-# ig02	 L2			  		-----> 		ig02				L2          None
-# ig03	 L3								...      
-# ig04	 L4								...      
-# ig05   L5	  L_5_5					ig05      L5        L5          L5_5
 
 
 def load_df_from_content(content):

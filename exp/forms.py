@@ -29,52 +29,6 @@ class UploadForm(forms.Form):
             queryset=User.objects.all())
 
 
-# class SearchForm(forms.Form):
-#     '''
-#     Search form for museum item list.
-#     '''
-    
-#     project = forms.ModelChoiceField(
-#         queryset=Project.objects.all(),
-#         widget=InlineInput(attrs={
-#                 'css_class': 'col-xs-2',
-#                 'placeholder': 'project ...', 
-#             }
-#         ),
-#         required=False
-#     )
-
-#     platform = forms.ModelChoiceField(
-#         queryset=ExpPlatform.objects.all(),
-#         widget=InlineInput(attrs={
-#                 'css_class': 'col-xs-2',
-#                 'placeholder': 'platform ...', 
-#             }
-#         ),
-#         required=False
-#     )
-
-#     organism = forms.ModelChoiceField(
-#         queryset=ModelOrganism.objects.all(),
-#         widget=InlineInput(attrs={
-#                 'css_class': 'col-xs-2',
-#                 'placeholder': 'organism ...', 
-#             }
-#         ),
-#         required=False
-#     )
-
-#     qfield = forms.ModelChoiceField(queryset=Descriptor.objects.all(),
-#         widget=InlineSelect(attrs={
-#             'css_class': 'col-xs-2',
-#             }),
-#         required=False)
-#     qvalue = forms.CharField(max_length=255, required=False,
-#         widget=InlineInput(attrs={
-#             'css_class': 'col-xs-2',
-#             'placeholder': 'descriptor value...',}))
-
-
 class UpdateCustomForm(forms.Form):
     '''
     Descriptor name and descriptor value for updating MuseumItem
@@ -116,7 +70,8 @@ class UpdateCommonForm(forms.Form):
             author_name = cleaned_data.get('value')
             try:
                 author = User.objects.get(name=author_name)
-            except:
+                del(author)
+            except Exception:
                 raise forms.ValidationError('Owner with name %s does not exist.' % author_name)
 
         return cleaned_data
@@ -138,7 +93,7 @@ class PkToValueField(forms.CharField):
             return value
         try:
             return self.model._default_manager.get(pk=int(value))
-        except:
+        except Exception:
             return value
 
 

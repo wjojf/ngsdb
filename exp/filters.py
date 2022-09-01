@@ -1,14 +1,8 @@
-from importlib.abc import ExecutionLoader
 import django_filters
 from django.contrib.contenttypes.models import ContentType
 from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, ExpPlatform, Experiment, ModelOrganism, Project, Sample
 from django.contrib.auth.models import User
 
-#As a suggestion: implement filtering on the Sample table. The
-#corresponding Experiment will be available as a related object along
-#with all its fields needed for filtering. Sort of like coming from
-#another end: get the list of Samples filter by desired descriptors,
-#then group by experiment and filter by remaining Experiment fields...
 
 def get_sample_descriptor_name_values_list():
     sample_descriptormaps = DescriptorMap.objects.filter(

@@ -1,20 +1,14 @@
-from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-########################
-#     Managers         #
-########################
-
-# TODO: 
-
 
 #####################
 #       Models      #
 #####################
+
 
 class Project(models.Model):
     title = models.CharField(max_length=150)

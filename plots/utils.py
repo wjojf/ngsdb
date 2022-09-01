@@ -6,20 +6,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA as sklearnPCA
 
 
-def loadDF(csv_filepath):
+def load_df(csv_filepath):
     return pd.read_csv(csv_filepath, index_col=None, skipfooter=5, engine='python')
 
 
-def getPCADataframe(csv_filepath):
+def get_pca_df(csv_filepath):
     
     try:
-        df = loadDF(csv_filepath)
-    except Exception as e:
+        df = load_df(csv_filepath)
+    except Exception:
         return pd.DataFrame()
 
-    X_std = StandardScaler().fit_transform(df.values.T)
+    x_std = StandardScaler().fit_transform(df.values.T)
     sklearn_pca = sklearnPCA(n_components=4)
-    Y = sklearn_pca.fit_transform(X_std)
+    Y = sklearn_pca.fit_transform(x_std)
     
     pca_df = pd.DataFrame()
     pca_df['condition'] = ['Ctrl']*3 + ['pyg']*3

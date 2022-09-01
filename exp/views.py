@@ -1,26 +1,16 @@
-from doctest import Example
-from re import template
-from telnetlib import EXOPL
-from attr import fields
 from django.shortcuts import redirect
 from django.views import View
 from django.views.generic import list, edit
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import smart_str
-
-
 from django.forms.models import modelform_factory, modelformset_factory
 from django.forms.formsets import formset_factory
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.contrib.auth.models import User
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
-
-from nlib.views import FilteredModelView
 from nlib.utils import build_tabs_dict
-
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap, Sample
 from exp.forms import DescriptorMapInlineForm, UploadForm, UpdateCommonForm, UpdateCustomForm, BaseUploadedFormSet
 from exp.filters import ExperimentFilter
@@ -70,7 +60,7 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
         return context
 
 
-    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+    def post(self, request: HttpRequest, *args, **kwargs):
         
         exp_obj = Experiment.objects.create(
             metadata_filepath=request.FILES['metadata_file'],
@@ -93,7 +83,6 @@ class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
         
         return redirect('exp_home_view')
    
-
 ##########################################################################
 
 class BaseActionView(list.ListView, edit.BaseFormView):
@@ -125,73 +114,12 @@ class BaseActionView(list.ListView, edit.BaseFormView):
     def form_invalid(self, form):
         return self.get(self.request, form=form)
 
-
 ##########################################################################
 
-class UpdateCommonView(BaseActionView):
-
-    form_class = UpdateCommonForm
-
-    def form_valid(self, form):
-        if '_update' in self.request.POST:
-            # Update self.queryset
-            self.idlist = self.request.POST.getlist('selected')
-            self.get_queryset()
-            field = form.cleaned_data['field']
-            new_value = form.cleaned_data['value']
-            if field == 'author':
-                new_value = Owner.objects.get(name=new_value)
-            kwargs = { field: new_value, }
-            self.queryset.update(**kwargs)
-        return HttpResponseRedirect(self.get_success_url())
-
 ##########################################################################
-
-class UpdateCustomView(BaseActionView):
-    '''
-    FIXME: This needs to be refactored to handle conditions and organism fields.
-
-    Overrides get_form() to return formset of UpdateCustomForms
-    form in POST handling therefore refers actually to this formset.
-    '''
-
-    form_class = UpdateCustomForm
-
-    def get_form(self, form_class):
-        formset_class = formset_factory(form_class, extra=3, max_num=3)
-        return formset_class(**self.get_form_kwargs())
-
-    def form_valid(self, form):
-        if '_update' in self.request.POST:
-            # Iterate through the formset and update fields
-            self.idlist = self.request.POST.getlist('selected')
-            self.get_queryset()
-            fields = {}
-            for the_form in form.forms:
-                if the_form.cleaned_data:
-                    field_name = str(the_form.cleaned_data['name'])
-                    field_value = the_form.cleaned_data['value']
-                    fields.update( {field_name: field_value,} )
-            for item in self.queryset:
-                DescriptorMap.objects.update_for_object(item, **fields)
-        return HttpResponseRedirect(self.get_success_url())
-
 
 class ImportCSVView(View):
     pass 
-
-##########################################################################
-
-class DescriptorListView(list.ListView):
-    model = Descriptor
-    template_name = 'exp/descriptors.html'
-
-
-    def get_context_data(self, **kwargs):
-        context = super(DescriptorListView, self).get_context_data(**kwargs)
-        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        
-        return context
 
 ##########################################################################
 
@@ -223,7 +151,6 @@ class HomeView(list.ListView):
             return Experiment.objects.filter(pk__in=exp_qs)
              
         return super().get_queryset()        
-
 
 class GenericInlineFormsetMixin(object):
     '''
@@ -390,7 +317,6 @@ class UpdateExperimentView(edit.UpdateView, GenericInlineFormsetMixin):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # self.inlines = None
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         formset_class = self.get_formset_class()
