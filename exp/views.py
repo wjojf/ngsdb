@@ -1,29 +1,26 @@
 from django.shortcuts import redirect
-from django.views import View
 from django.views.generic import list, edit
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
-from django.utils.encoding import smart_str
-from django.forms.models import modelform_factory, modelformset_factory
-from django.forms.formsets import formset_factory
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.forms.models import modelform_factory
+from django.http import HttpRequest
 
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.forms import generic_inlineformset_factory
 
 from nlib.utils import build_tabs_dict
-from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Descriptor, DescriptorMap, Sample
-from exp.forms import DescriptorMapInlineForm, UploadForm, ImportForm
+from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample
+from exp.forms import UploadForm, ImportForm
 from exp.filters import ExperimentFilter
 import exp.parse_meta as exp_meta
 
 
 EXP_TAB = {
     'Experiments': 'exp_home_view',
-    'Upload': 'exp_upload_view',
+    'Create': 'exp_upload_view',
 }
 
 
@@ -36,14 +33,14 @@ class MyLoginView(LoginView):
     template_name = 'login.html'
 
 
-class UploadCSVView(edit.BaseFormView, TemplateResponseMixin):
+class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
  
     template_name = 'exp/upload.html'
     form_class = UploadForm
 
 
     def get_context_data(self, **kwargs):
-        context = super(UploadCSVView, self).get_context_data(**kwargs)
+        context = super(CreateExperimentView, self).get_context_data(**kwargs)
         context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
         
         if self.request.method == 'GET':
@@ -114,7 +111,7 @@ class BaseActionView(list.ListView, edit.BaseFormView):
 ##########################################################################
 
 
-class ImportCSVView(edit.BaseFormView, TemplateResponseMixin):
+class ImportExperimentsView(edit.BaseFormView, TemplateResponseMixin):
     '''
     Uploading multiple experiments. Idea:
         - Get GoogleDrive folder url / local folder (How?)
@@ -127,11 +124,11 @@ class ImportCSVView(edit.BaseFormView, TemplateResponseMixin):
                     - Create experiment obj (call UploadCSVView.post() from here?)
 
     ''' 
-    template_name = 'exp/upload.html'
+    template_name = 'exp/import.html'
     form_class = ImportForm
 
     def get_context_data(self, **kwargs):
-        context = super(ImportCSVView, self).get_context_data(**kwargs)
+        context = super(ImportExperimentsView, self).get_context_data(**kwargs)
         context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
 
         if self.request.method == 'GET':
@@ -142,9 +139,14 @@ class ImportCSVView(edit.BaseFormView, TemplateResponseMixin):
 
         return context
     
-    
+    def post(self, request, *args, **kwargs):
+        with open('debug.txt', 'w') as f:
+            f.write(str(request.FILES))
+        
+        return super().post(request, *args, **kwargs)
     
 ##########################################################################
+
 
 class HomeView(list.ListView):
     
@@ -175,7 +177,8 @@ class HomeView(list.ListView):
              
         return super().get_queryset()        
 
-class GenericInlineFormsetMixin(object):
+
+
     '''
     A mixin that provides a way to show and handle generic inline formset
     in a request.
@@ -246,134 +249,3 @@ class GenericInlineFormsetMixin(object):
                     'files': self.request.FILES,
             })
         return kwargs
-
-class AddExperimentView(edit.CreateView, GenericInlineFormsetMixin):
-
-    model = Experiment
-    inline_form_class = DescriptorMapInlineForm
-    inline_model_class = DescriptorMap
-    fields = '__all__'
-    template_name = 'exp/crud.html'
-
-    def form_valid(self, form, formset):
-        '''
-        Handles both form AND formset.
-        '''
-        self.object.save()
-        form.save_m2m()
-        self.inlines = formset.save()
-        return  HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form, formset):
-        '''
-        Replaces form_invalid to handle both form AND formset.
-        '''
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-    def get_context_data(self, **kwargs):
-        context = kwargs
-        context['model'] = self.model._meta.verbose_name
-        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        context['submit_line'] = (
-                {'name': 'back', 'class': 'btn-default',},
-                {'name': 'save', 'class': 'btn-success', },
-                )
-        return context
-
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        self.inlines = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        formset_class = self.get_formset_class()
-        formset = self.get_formset(formset_class) # Need to pass instance kwarg!
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        self.inlines = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        if form.is_valid():
-            self.object = form.save(commit=False)
-        formset_class = self.get_formset_class()
-        formset = self.get_formset(formset_class)
-        if formset.is_valid():
-            return self.form_valid(form, formset)
-        else:
-            return self.form_invalid(form, formset)
-
-class UpdateExperimentView(edit.UpdateView, GenericInlineFormsetMixin):
-
-    model = Experiment
-    inline_form_class = DescriptorMapInlineForm
-    inline_model_class = DescriptorMap
-    template_name = 'exp/crud.html'
-
-    def form_valid(self, form, formset):
-        '''
-        Replaces form_valid to handle both form AND formset.
-        '''
-        form.save()
-        formset.save()
-        return  HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form, formset):
-        '''
-        Replaces form_invalid to handle both form AND formset.
-        '''
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-    def get_context_data(self, **kwargs):
-        context = kwargs
-        if self.object:
-            context['object'] = self.object
-            context_object_name = self.get_context_object_name(self.object)
-            if context_object_name:
-                context[context_object_name] = self.object
-        context['model'] = self.model._meta.verbose_name
-        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        return context
-
-    def get_success_url(self):
-        return reverse_lazy('exp_home_view')
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        formset_class = self.get_formset_class()
-        formset = self.get_formset(formset_class)
-        return self.render_to_response(self.get_context_data(form=form, formset=formset))
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.inlines = None
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        formset_class = self.get_formset_class()
-        formset = self.get_formset(formset_class)
-        if form.is_valid() and formset.is_valid():
-            return self.form_valid(form, formset)
-        else:
-            return self.form_invalid(form, formset)
-
-
-class AddFieldTaxonomyView(edit.CreateView):
-
-    model = Descriptor
-    fields = '__all__'
-    template_name = 'exp/crud.html'
-
-    def get_context_data(self, **kwargs):
-        context = kwargs
-        context['model'] = 'descriptor'
-        context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        context['submit_line'] = (
-                {'name': 'back', 'class': 'btn-default',},
-                {'name': 'save', 'class': 'btn-success', },
-                )
-        return context
-
-    def get_success_url(self):
-        return reverse_lazy('exp_home_view')

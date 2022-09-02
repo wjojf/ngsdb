@@ -1,113 +1,16 @@
-{% extends "strains/base.html" %}
-{% load orders_tags museum_tags common_tags %}
+{% extends "exp/base.html" %}
+{% load  common_tags %}
 {% block content %}
     <div class="col-md-12">
         {% block filters %}
             <ul class="nav nav-tabs">
                 {% render_tabs %}
-                <li class="active"><a href="#">Import uploaded</a></li>
+                <li class="active"><a href="#">Import Multiple</a></li>
             </ul>
         {% endblock %}
-		<form class="form-horizontal" action='{% url "museum_import_view" %}' method="post">{% csrf_token %}
+		<form class="form-horizontal" action='#' method="post">{% csrf_token %}
+            <input type="file" name='folder' webkitdirectory mozdirectory />
             {% submit_row %}
-			{{ formset.management_form }}
-            {% if formset.errors %}
-                {% for error in formset.errors %}
-                    <span class="error">{{ error }}</span>
-                {% endfor %}
-            {% endif %}
-			{% for form in formset.forms %}
-                <div class="summary">
-                    {% for field in form.hidden_fields %}{{ field }}{% endfor %}
-                    {% if form.errors %}
-                        <span class="error">{{ form.errors }}</span>
-                    {% endif %}
-                        <div class="row form-group">
-                            <label class="col-xs-2 control-label" for="{{ form.author.id_for_label }}">{{ form.author.label }}</label>
-                            <div class="col-xs-3">
-                                {{ form.author|add_css:"form-control" }}
-                                <span class="help-block">{{ form.author.help_text }}</span>
-                                {% if form.author.errors %}
-                                    {% for error in form.author.errors %}
-                                        <span class="error">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                            <label class="col-xs-2 control-label" for="{{ form.original_author.id_for_label }}">
-                                {{ form.original_author.label }}
-                            </label>
-                            <div class="col-xs-3">
-                                {{ form.original_author|add_css:"form-control" }}
-                                <span class="help-block">{{ form.original_author.help_text }}</span>
-                                {% if form.original_author.errors %}
-                                    {% for error in form.original_author.errors %}
-                                        <span class="error">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <label class="col-xs-2 control-label" for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
-                            <div class="col-xs-3">
-                                {{ form.name|add_css:"form-control" }}
-                                <span class="help-block">{{ form.name.help_text }}</span>
-                                {% if form.name.errors %}
-                                    {% for error in form.name.errors %}
-                                        <span class="error">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                            <label class="col-xs-2 control-label" for="{{ form.item_type.id_for_label }}">
-                                {{ form.item_type.label }}
-                            </label>
-                            <div class="col-xs-3">
-                                {{ form.item_type|add_css:"form-control" }}
-                                <span class="help-block">{{ form.item_type.help_text }}</span>
-                                {% if form.item_type.errors %}
-                                    {% for error in form.item_type.errors %}
-                                        <span class="error">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="row form-group">
-                            <label class="col-xs-2 control-label" for="{{ form.storage.id_for_label }}">{{ form.storage.label }}</label>
-                            <div class="col-xs-8">
-                                {{ form.storage|add_css:"form-control" }}
-                                <span class="help-block">{{ form.storage.help_text }}</span>
-                                {% if form.storage.errors %}
-                                    {% for error in form.storage.errors %}
-                                        <span class="error">{{ error }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                        </div>
-                    <div class="row">
-                        <div class="col-xs-4"><h4>Descriptor</h4></div>
-                        <div class="col-xs-4"><h4>Value</h4></div>
-                    </div>
-                    {{ form.inlines.management_form }}
-                    {% for inline_form in form.inlines.forms %}
-                        {% for field in inline_form.hidden_fields %}{{ field }}{% endfor %}
-                        {% if inline_form.errors %}
-                            <span class="error">{{ inline_form.errors }}</span>
-                        {% endif %}
-                        <div class="row form-group">
-                            {% for field in inline_form.visible_fields %}
-                                <div class="col-xs-4">
-                                    {{ field|add_css:"form-control" }}
-                                    {% if field.errors %}
-                                        {% for error in field.errors %}
-                                            <span class="error">{{ error }}</span>
-                                        {% endfor %}
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        {% submit_row %}
 		</form>
 	</div>
 {% endblock %}
