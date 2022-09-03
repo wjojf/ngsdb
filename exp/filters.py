@@ -17,14 +17,16 @@ def get_condition_descriptors(n: int):
     except KeyError:
         return ()
     
-    sample_descriptormaps = DescriptorMap.objects.filter(
+    sample_descriptormaps = DescriptorMap.objects.select_related('content_type').filter(
         content_type=ContentType.objects.get_for_model(Sample)
     )
     
-    sample_descriptormaps = sample_descriptormaps.filter(descriptor_name_value__desc_name__name=descriptor_name)
+    sample_descriptormaps = sample_descriptormaps.select_related('descriptor_name_value__desc_name__name').\
+        filter(descriptor_name_value__desc_name__name=descriptor_name)
     
-    descriptor_name_values = sample_descriptormaps.select_related('descriptor_name_value').values_list('descriptor_name_value').\
-    distinct('descriptor_name_value')
+    descriptor_name_values = sample_descriptormaps.select_related('descriptor_name_value').\
+        values_list('descriptor_name_value').\
+            distinct('descriptor_name_value')
     
     return DescriptorNameValue.objects.filter(pk__in=descriptor_name_values)
 

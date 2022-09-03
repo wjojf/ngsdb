@@ -16,6 +16,7 @@ dash-bio = "*"
 django-filter = "*"
 ipython = "*"
 django-user-sessions = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

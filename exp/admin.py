@@ -70,7 +70,7 @@ class ExperimentAdmin(admin.ModelAdmin):
         
         ('Metadata', {
                 'classes': ['wide'],
-                'fields': ['users','project', 'platform', 'organism', 'prep_method']
+                'fields': ['users', 'project', 'platform', 'organism', 'prep_method']
             }
         ),
         
