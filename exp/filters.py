@@ -4,12 +4,26 @@ from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, ExpPlatfo
 from django.contrib.auth.models import User
 
 
-def get_sample_descriptor_name_values_list():
+CONDITION_NAMES = {
+    1: 'Condition',
+    2: 'Condition2'
+}
+
+
+def get_condition_descriptors(n: int):
+    
+    try:
+        descriptor_name = CONDITION_NAMES[n]
+    except KeyError:
+        return ()
+    
     sample_descriptormaps = DescriptorMap.objects.filter(
         content_type=ContentType.objects.get_for_model(Sample)
     )
     
-    descriptor_name_values = sample_descriptormaps.values_list('descriptor_name_value').\
+    sample_descriptormaps = sample_descriptormaps.filter(descriptor_name_value__desc_name__name=descriptor_name)
+    
+    descriptor_name_values = sample_descriptormaps.select_related('descriptor_name_value').values_list('descriptor_name_value').\
     distinct('descriptor_name_value')
     
     return DescriptorNameValue.objects.filter(pk__in=descriptor_name_values)
@@ -37,10 +51,16 @@ class ExperimentFilter(django_filters.FilterSet):
         queryset=ModelOrganism.objects.all()
     )
         
-    conditions = django_filters.ModelChoiceFilter(
+    condition_1 = django_filters.ModelChoiceFilter(
         field_name='conditions__descriptor_name_value',
-        queryset=get_sample_descriptor_name_values_list()
+        queryset=get_condition_descriptors(1)
     )
+    
+    condition_2 = django_filters.ModelChoiceFilter(
+        field_name='conditions__descriptor_name_value',
+        queryset=get_condition_descriptors(2)
+    )
+    
     
     
     class Meta:

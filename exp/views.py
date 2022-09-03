@@ -110,7 +110,6 @@ class BaseActionView(list.ListView, edit.BaseFormView):
 
 ##########################################################################
 
-
 class ImportExperimentsView(edit.BaseFormView, TemplateResponseMixin):
     '''
     Uploading multiple experiments. Idea:
