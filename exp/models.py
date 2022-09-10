@@ -9,8 +9,9 @@ from django.db.models import Q
 #       Models      #
 #####################
 
-class HandledURL(models.Model):
-    url = models.URLField(verbose_name='Experiment folder url', unique=True)
+class HandledDirectory(models.Model):
+    directory_name = models.CharField(verbose_name='Experiment Directory', max_length=200)
+
 
 class Project(models.Model):
     title = models.CharField(max_length=150)

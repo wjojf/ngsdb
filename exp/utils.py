@@ -1,4 +1,4 @@
-from exp.models import HandledURL, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
+from exp.models import HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
 import os 
 
 
@@ -86,4 +86,20 @@ def filter_experiment_folder(folder_name):
     
     return valid_csv_files
     
-    
+
+def match_rna_folder(base_folder_filepath):
+    global RNA_SEQ_FOLDER_PATTERN
+    rna_folders = [
+        folder 
+        for folder in os.listdir(base_folder_filepath)
+        if folder.endswith(RNA_SEQ_FOLDER_PATTERN)
+    ]
+    return rna_folders
+
+
+#####################################
+# Refresh Experiments Main Function #
+#####################################
+
+def refresh_experiments():
+    ''''''
