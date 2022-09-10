@@ -135,7 +135,7 @@ def render_button(tag, text, **kwargs):
 
     btn_tpl = '<{tag}{attrs}>{text}</{tag}>'
     if tag == 'button':
-        if not 'name' in kwargs:
+        if 'name' not in kwargs:
             kwargs['name'] = text.lower().replace(' ', '_')
         kwargs['value'] = '_{}'.format(kwargs['name'])
     attrs = []

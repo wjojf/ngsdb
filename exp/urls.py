@@ -1,4 +1,5 @@
 from django.urls import path
+from django.shortcuts import redirect
 from exp import views 
 
 
@@ -9,6 +10,6 @@ urlpatterns = [
     path('logout', views.logout_user, name='logout'),
     
     path('create/', views.CreateExperimentView.as_view(), name='exp_upload_view'),
-    path('import/', views.ImportExperimentsView.as_view(),
-        name='exp_import_view'),
+    path('update/', views.update_experiments,
+        name='update-experiments'),
 ]
