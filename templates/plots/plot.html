@@ -6,6 +6,9 @@
     {% else%}
         {% if graph %}
             {{graph|safe}}
+        {% else %}
+            <h1>No data Found</h1>
+            <a href="{% url 'exp_home_view'%}">Home</a>
         {% endif %}
     {% endif %}    
 

@@ -12,6 +12,12 @@ from django.db.models import Q
 
 class HandledDirectory(models.Model):
     directory_name = models.CharField(verbose_name='Experiment Directory', max_length=200)
+    
+    class Meta:
+        verbose_name_plural = 'Handled Directories'
+    
+    def __str__(self):
+        return str(self.directory_name)
 
 
 class Project(models.Model):

@@ -2,19 +2,15 @@ from django.shortcuts import redirect
 from django.views.generic import list, edit
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
-from django.forms.models import modelform_factory
 from django.http import HttpRequest
-
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.forms import generic_inlineformset_factory
-
 from nlib.utils import build_tabs_dict
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample
-from exp.forms import UploadForm, ImportForm
+from exp.forms import UploadForm
 from exp.filters import ExperimentFilter
+from exp.utils import refresh_experiments
 import exp.parse_meta as exp_meta
 
 
@@ -85,17 +81,12 @@ class HomeView(list.ListView):
     model = Experiment
     template_name = 'exp/home.html'
     filterset_class = ExperimentFilter
-    paginate_by = 50
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
         context['filter_obj'] = self.filterset_class(self.request.GET, queryset=self.model.objects.all())
         context['tabs'] = build_tabs_dict(self.request, EXP_TAB)
-        context['submit_line'] = (
-                {'tag': 'a', 'name': '+ Add item', 'href': reverse_lazy('museum_add_item_view'),  'class': 'btn-info',},
-                {'tag': 'a', 'name': '+ Add descriptor', 'href': reverse_lazy('museum_add_descriptor_view'),  'class': 'btn-info',},
-            )
         
         return context
     
@@ -112,3 +103,5 @@ class HomeView(list.ListView):
 
 def update_experiments(request):
     ''''''
+    refresh_experiments()
+    return redirect('exp_home_view')

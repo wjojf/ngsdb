@@ -1,14 +1,23 @@
+from asyncore import write
+from distutils.log import debug
 from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, DescriptorValue, HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
 from django.contrib.contenttypes.models import ContentType
-from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH
+from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH, BASE_DIR
 from django.core.files.base import File
+from exp.parse_meta import _parse_meta
 import os 
+import gc
+
+
+def write_debug(msg):
+    with open('debug.txt', 'a', newline='\n') as d:
+        d.write(msg + '\n')
 
 
 # TODO: Add Regex patterns
-RNA_SEQ_FOLDER_PATTERN = '_RNA_Seq'
+RNA_SEQ_FOLDER_PATTERN = 'RNA-Seq'
 RAW_DATA_FILEPATH_PATTERN = 'AICAR.deseq.csv'
-META_DATA_FILEPATH_PATTERN = '_NextSeq.csv'
+META_DATA_FILEPATH_PATTERN = 'NextSeq.xlsx'
 
 
 #####################
@@ -51,7 +60,7 @@ status_desc_map, desc_map_created = DescriptorMap.objects.get_or_create(
 # Default Project #
 ###################
 
-DEFAULT_PROJECT = Project.objects.get_or_create(
+DEFAULT_PROJECT, project_created = Project.objects.get_or_create(
     title='Default Project'
 )
 
@@ -59,7 +68,7 @@ DEFAULT_PROJECT = Project.objects.get_or_create(
 # Default PrepMethod #               
 ######################
 
-DEFAULT_PREP_METHOD = PrepMethod.objects.get_or_create(
+DEFAULT_PREP_METHOD, method_created = PrepMethod.objects.get_or_create(
     method='Default Method',
     kit='Default Kit'
 )
@@ -105,15 +114,12 @@ def validate_csv_file(filename: str):
 
 
 def filter_folder_csv_files(folder_files: list):
-    csv_folder_files = [
-        file
-        for file in folder_files if file.endswith('.csv')
-    ]
-
+    
     csv_folder_files_dicts = [
         validate_csv_file(file)
-        for file in csv_folder_files
+        for file in folder_files
     ]
+    write_debug(f'{csv_folder_files_dicts}')
 
     valid_csv_files = [
         file_dict
@@ -129,6 +135,7 @@ def filter_rna_folder(folder_name):
     try:
         folder_files = os.listdir(folder_name)
     except Exception:
+        write_debug(f'Error scanning {folder_name}')
         return ()
     
     valid_csv_files = filter_folder_csv_files(folder_files)
@@ -154,40 +161,105 @@ def match_rna_folder(base_folder_filepath):
     return rna_folders
 
 
-def convert_string_to_file_instance(fp_string: str):
+def generate_filefield_instances_by_filepath(fp_string: str):
     ''''''
     try:
         with open(fp_string) as f:
-            return File(f)
+            return fp_string, File(f)
     except Exception:
         return None
 
+
+def create_experiment_obj(directory_filepath, directory_files):
+    exp_obj = Experiment.objects.create(
+        project=DEFAULT_PROJECT,
+        platform=DEFAULT_EXP_PLATFORM,
+        organism=DEFAULT_MODEL_ORGANISM,
+        prep_method=DEFAULT_PREP_METHOD
+    )
+    
+    meta_file_dict = [
+        file_dict 
+        for file_dict in directory_files
+        if file_dict['type'] == 'meta_data'][0]
+    
+    raw_file_dict = [
+        file_dict
+        for file_dict in directory_files
+        if file_dict['type'] == 'raw_data'][0]
+    
+    
+    meta_file_instances = generate_filefield_instances_by_filepath(
+        directory_filepath / meta_file_dict['filename']
+    )
+    if meta_file_instances:
+        try:
+            meta_saved_to = exp_obj.metadata_filepath.storage.save(*meta_file_instances)
+            exp_obj.metadata_filepath = meta_saved_to
+        except Exception as e:
+            write_debug((f'MetaData error {e}'))
+            
+    
+    
+    raw_file_instances = generate_filefield_instances_by_filepath(
+        directory_filepath / raw_file_dict['filename']
+    )
+    
+    if raw_file_instances:
+        try:
+            raw_saved_to = exp_obj.data_filepath.storage.save(*raw_file_instances)
+            exp_obj.data_filepath = raw_saved_to
+        except Exception as e:
+            write_debug(f'RawData error {e}')
+
+    
+    write_debug(f'{meta_file_instances}')
+    write_debug(f'{raw_file_instances}')
+
+    exp_obj.save()
+    gc.collect()
+    
+    # Parse Meta
+    # TODO:
+
+    
 #####################################
 # Refresh Experiments Main Function #
 #####################################
 
 def refresh_experiments():
     ''''''
+    
     try:
         rna_folders = match_rna_folder(NGS_LOCAL_FOLDER_FILEPATH)
         if len(rna_folders) == 0:
+            write_debug('RNA folders not found')
             return
     except Exception:
+        write_debug('Error loading RNA folders')
         return 
 
-    
     for rna_folder in rna_folders:
         
         handled_directory, dir_created = HandledDirectory.objects.\
             get_or_create(
                 directory_name=rna_folder        
         )
-        valid_directory_files = filter_rna_folder(rna_folder)
-        
-        # If New directory & both csv files found
-        if dir_created and bool(valid_directory_files):
-            #TODO: Create Exp obj
-            pass
+        valid_directory_files = filter_rna_folder(NGS_LOCAL_FOLDER_FILEPATH / rna_folder)
+        write_debug(f'{valid_directory_files}')
+        # If New directory 
+        if dir_created:
+            # If both csv files found
+            if bool(valid_directory_files):
+                create_experiment_obj(NGS_LOCAL_FOLDER_FILEPATH/rna_folder, valid_directory_files)
+                
+            # Folder Invalid so directory is not handled
+            else:
+                write_debug(f'No files found for {rna_folder}')
+                handled_directory.delete()
+        else:
+            write_debug(f'Directory not created {handled_directory}')
+            
     
     
     

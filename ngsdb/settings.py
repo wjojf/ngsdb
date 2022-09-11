@@ -137,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Path to your local file system folder with NGS data
-NGS_LOCAL_FOLDER_FILEPATH = ''
+NGS_LOCAL_FOLDER_FILEPATH = BASE_DIR / 'NGS_TEST_FOLDER'
 
 
 try:
