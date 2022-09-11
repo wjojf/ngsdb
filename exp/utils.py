@@ -1,4 +1,7 @@
-from exp.models import HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
+from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, DescriptorValue, HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
+from django.contrib.contenttypes.models import ContentType
+from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH
+from django.core.files.base import File
 import os 
 
 
@@ -8,8 +11,62 @@ RAW_DATA_FILEPATH_PATTERN = 'AICAR.deseq.csv'
 META_DATA_FILEPATH_PATTERN = '_NextSeq.csv'
 
 
-#TODO: Add Default Project, Platform, ModelOrganism, PrepMethod
+#####################
+# DEFAULT INSTANCES #
+#####################
 
+DEFAULT_EXP_PLATFORM, platform_created = ExpPlatform.objects.get_or_create(
+    title='Default Platform',
+    n_reads=0,
+    length_libtype='Default Length & Libtype'
+)
+
+#########################
+# Default ModelOrganism #
+#########################
+
+DEFAULT_MODEL_ORGANISM, organism_created = ModelOrganism.objects.get_or_create(
+    name='human'
+)
+# Add Custom field: status='default'
+status_descriptor, desc_created = Descriptor.objects.get_or_create(
+    name='status'
+)
+status_value, value_created = DescriptorValue.objects.get_or_create(
+    value='default'
+)
+status_desc_name_value, desc_name_value_created = DescriptorNameValue.objects.\
+    get_or_create(
+        desc_name=status_descriptor,
+        desc_value=status_value
+)
+status_desc_map, desc_map_created = DescriptorMap.objects.get_or_create(
+    descriptor_name_value=status_desc_name_value,
+    content_type=ContentType.objects.get_for_model(ModelOrganism),
+    object_id=DEFAULT_MODEL_ORGANISM.id
+)
+    
+
+###################
+# Default Project #
+###################
+
+DEFAULT_PROJECT = Project.objects.get_or_create(
+    title='Default Project'
+)
+
+######################
+# Default PrepMethod #               
+######################
+
+DEFAULT_PREP_METHOD = PrepMethod.objects.get_or_create(
+    method='Default Method',
+    kit='Default Kit'
+)
+
+###############################
+# Folder Validating functions #
+###############################
 
 def validate_folder(folder_name: str):
     global RNA_SEQ_FOLDER_PATTERN
@@ -67,7 +124,7 @@ def filter_folder_csv_files(folder_files: list):
     return valid_csv_files
 
 
-def filter_experiment_folder(folder_name):
+def filter_rna_folder(folder_name):
     
     try:
         folder_files = os.listdir(folder_name)
@@ -97,9 +154,42 @@ def match_rna_folder(base_folder_filepath):
     return rna_folders
 
 
+def convert_string_to_file_instance(fp_string: str):
+    ''''''
+    try:
+        with open(fp_string) as f:
+            return File(f)
+    except Exception:
+        return None
+
 #####################################
 # Refresh Experiments Main Function #
 #####################################
 
 def refresh_experiments():
     ''''''
+    try:
+        rna_folders = match_rna_folder(NGS_LOCAL_FOLDER_FILEPATH)
+        if len(rna_folders) == 0:
+            return
+    except Exception:
+        return 
+
+    
+    for rna_folder in rna_folders:
+        
+        handled_directory, dir_created = HandledDirectory.objects.\
+            get_or_create(
+                directory_name=rna_folder        
+        )
+        valid_directory_files = filter_rna_folder(rna_folder)
+        
+        # If New directory & both csv files found
+        if dir_created and bool(valid_directory_files):
+            #TODO: Create Exp obj
+            pass
+    
+    
+    
+    
+    

@@ -9,11 +9,11 @@ from django.template import Context
 from django.template.defaultfilters import date, escape, capfirst
 from django.contrib.auth.models import User
 from django.db.models import Q
-
 from exp.models import DescriptorMap, Sample
 
-from nlib.views import ALLOWED_LOOKUP_TYPES
 
+ALLOWED_LOOKUP_TYPES = ('iexact', 'icontains', 'in', 'gt', 'gte', 'lt',
+                        'lte', 'istratswith', 'iendswith', 'range', 'isnull', 'iregex')
 
 register = template.Library()
 
@@ -157,99 +157,6 @@ def form_enc(form):
             res = 'enctype="multipart/form-data"'
             break
     return res
-
-
-@register.simple_tag(takes_context=True)
-def get_objects_by_user(context, user):
-    object_list = context['object_list']
-    return object_list.filter(user=user)
-
-
-class RenderInputNode(template.Node):
-    def __init__(self, input_type, name, value):
-        self.input_type = input_type
-        self.name = name
-        self.value = template.Variable(value)
-        self._value = value
-
-    def render(self, context):
-        t = '<input type="%s" name="%s" value="%s">'
-        try:
-            value = self.value.resolve(context)
-        except template.VariableDoesNotExists:
-            value = self._value
-        return t % (self.input_type, self.name, value)
-
-
-@register.tag(name='render_input')
-def do_render_input(parser, token):
-    '''
-    Outputs HTML <input> tag with specified type, name, and value
-    attributes.
-
-    Usage:
-            {% render_input [type] [name] "[value]"
-
-    Example:
-            {% render_input checkbox delete order.id %}
-    or
-            {% render_input button save_btn "Save and place an order" %}
-    '''
-
-    try:
-        tag_name, input_type, name, value = token.split_contents()
-    except ValueError:
-        raise template.TemplateSyntaxError('%r tag requires exactly three arguments' % tag_name)
-    return RenderInputNode(input_type, name, value)
-
-
-@register.simple_tag()
-def list_filter(field, klass, *args, **kwargs):
-    '''
-    Outputs list of filters:
-
-            {% list_filter storage__location strains.Storage lookup_type=iexact rel=location tag=ul max_number=100 %}
-
-    will produce (obj is the Storage instance being iterated on)
-
-            <li><a href="?storage_location__iexact=obj.rel">obj.rel</a></li>
-    '''
-    tag = kwargs.get('tag', 'ul') # Tag to wrap the output in the template
-    max_number = kwargs.get('max_number', None)
-    lookup_type = kwargs.get('lookup_type', '') # ORM lookup type
-    rel = kwargs.get('rel', 'pk')
-
-    if tag in ('ul', 'ol'):
-        t = '<li>%s</li>'
-    elif tag == 'table':
-        t = '<tr><th>%s</th><tr>'
-    else:
-        t = '<p>%s</p>'
-
-    model = apps.get_model(*klass.split('.'))
-    if model is None:
-        raise template.TemplateSyntaxError('list_filter tag was given \
-                an invalid model: %s' % model)
-
-    if lookup_type and (rel != 'pk'):
-        lookup_str = '%s__%s' % (field, lookup_type)
-    else:
-        lookup_str = field
-
-    if max_number:
-        qs = model.objects.all()[:max_number]
-    else:
-        qs = model.objects.all()
-    result = []
-    for obj in qs:
-        try:
-            val = smart_str(getattr(obj, rel))
-        except AttributeError:
-            val = ''
-        s = '<a href="?%s=%s">%s</a>' % (lookup_str, val, val)
-        result.append(t % s)
-    return mark_safe(''.join(result))
-
 
 @register.filter
 def edit_link(obj):
