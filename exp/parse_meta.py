@@ -11,7 +11,9 @@ EXPERIMENT_DESCRIPTOR_COLUMNS = {
 
 
 def load_df_from_content(content):
-	df = pd.read_csv(content, sep=',')
+	df = pd.read_csv(content) 
+	if len(df.columns) <= 1:
+		df = pd.read_csv(content,sep=';')
 	return df
 
 
@@ -78,8 +80,8 @@ def create_descriptors(df, sample_column, descriptor_column, exp_obj):
 		if pd.isnull(sample_value) or pd.isnull(descriptor_value):
 			continue
   
-		sample_value = str(sample_value)
-		descriptor_value = str(descriptor_value)
+		sample_value = str(sample_value).lower()
+		descriptor_value = str(descriptor_value).lower()
    
 		sample_obj, sample_created = exp_models.Sample.objects.get_or_create(
 			experiment=exp_obj,

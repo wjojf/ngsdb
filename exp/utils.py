@@ -1,9 +1,7 @@
-from asyncore import write
-from distutils.log import debug
 from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, DescriptorValue, HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
 from django.contrib.contenttypes.models import ContentType
-from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH, BASE_DIR
-from django.core.files.base import File
+from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH, BASE_DIR, MEDIA_ROOT
+from django.core.files.base import File, ContentFile
 from exp.parse_meta import _parse_meta
 import os 
 import gc
@@ -17,7 +15,7 @@ def write_debug(msg):
 # TODO: Add Regex patterns
 RNA_SEQ_FOLDER_PATTERN = 'RNA-Seq'
 RAW_DATA_FILEPATH_PATTERN = 'AICAR.deseq.csv'
-META_DATA_FILEPATH_PATTERN = 'NextSeq.xlsx'
+META_DATA_FILEPATH_PATTERN = 'NextSeq.csv'
 
 
 #####################
@@ -119,7 +117,7 @@ def filter_folder_csv_files(folder_files: list):
         validate_csv_file(file)
         for file in folder_files
     ]
-    write_debug(f'{csv_folder_files_dicts}')
+
 
     valid_csv_files = [
         file_dict
@@ -135,7 +133,6 @@ def filter_rna_folder(folder_name):
     try:
         folder_files = os.listdir(folder_name)
     except Exception:
-        write_debug(f'Error scanning {folder_name}')
         return ()
     
     valid_csv_files = filter_folder_csv_files(folder_files)
@@ -161,66 +158,45 @@ def match_rna_folder(base_folder_filepath):
     return rna_folders
 
 
-def generate_filefield_instances_by_filepath(fp_string: str):
-    ''''''
-    try:
-        with open(fp_string) as f:
-            return fp_string, File(f)
-    except Exception:
-        return None
-
-
 def create_experiment_obj(directory_filepath, directory_files):
+    
+    meta_file_dict = [
+        file_dict 
+        for file_dict in directory_files
+        if file_dict['type'] == 'meta_data'
+    ][0]
+    
+    raw_file_dict = [
+        file_dict
+        for file_dict in directory_files
+        if file_dict['type'] == 'raw_data'
+    ][0]
+    
+    
+    meta_content_file = ContentFile(
+        open(directory_filepath / meta_file_dict['filename']).read(),
+        meta_file_dict['filename']
+    )
+    raw_content_file = ContentFile(
+        open(directory_filepath / raw_file_dict['filename']).read(),
+        raw_file_dict['filename']
+    )
+
     exp_obj = Experiment.objects.create(
+        metadata_filepath=meta_content_file,
+        data_filepath=raw_content_file,
         project=DEFAULT_PROJECT,
         platform=DEFAULT_EXP_PLATFORM,
         organism=DEFAULT_MODEL_ORGANISM,
         prep_method=DEFAULT_PREP_METHOD
     )
-    
-    meta_file_dict = [
-        file_dict 
-        for file_dict in directory_files
-        if file_dict['type'] == 'meta_data'][0]
-    
-    raw_file_dict = [
-        file_dict
-        for file_dict in directory_files
-        if file_dict['type'] == 'raw_data'][0]
-    
-    
-    meta_file_instances = generate_filefield_instances_by_filepath(
-        directory_filepath / meta_file_dict['filename']
-    )
-    if meta_file_instances:
-        try:
-            meta_saved_to = exp_obj.metadata_filepath.storage.save(*meta_file_instances)
-            exp_obj.metadata_filepath = meta_saved_to
-        except Exception as e:
-            write_debug((f'MetaData error {e}'))
-            
-    
-    
-    raw_file_instances = generate_filefield_instances_by_filepath(
-        directory_filepath / raw_file_dict['filename']
-    )
-    
-    if raw_file_instances:
-        try:
-            raw_saved_to = exp_obj.data_filepath.storage.save(*raw_file_instances)
-            exp_obj.data_filepath = raw_saved_to
-        except Exception as e:
-            write_debug(f'RawData error {e}')
 
-    
-    write_debug(f'{meta_file_instances}')
-    write_debug(f'{raw_file_instances}')
 
     exp_obj.save()
     gc.collect()
     
     # Parse Meta
-    # TODO:
+    _parse_meta(MEDIA_ROOT / exp_obj.metadata_filepath.name, exp_obj)
 
     
 #####################################
@@ -258,7 +234,7 @@ def refresh_experiments():
                 write_debug(f'No files found for {rna_folder}')
                 handled_directory.delete()
         else:
-            write_debug(f'Directory not created {handled_directory}')
+            write_debug(f'Directory already handled {handled_directory}')
             
     
     
