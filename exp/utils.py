@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH, BASE_DIR, MEDIA_ROOT
 from django.core.files.base import File, ContentFile
 from exp.parse_meta import _parse_meta
+from django.contrib.auth.models import User
 import os 
 import gc
 
@@ -189,6 +190,9 @@ def create_experiment_obj(directory_filepath, directory_files):
         platform=DEFAULT_EXP_PLATFORM,
         organism=DEFAULT_MODEL_ORGANISM,
         prep_method=DEFAULT_PREP_METHOD
+    )
+    exp_obj.users.set(
+        [User.objects.get(username='admin')]
     )
 
 

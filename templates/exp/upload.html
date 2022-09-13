@@ -2,12 +2,9 @@
 {% load common_tags exp_tags %}
 {% block content %} 
     {% if not edit_page %}
-    <ul class="nav nav-tabs">
-        {% render_tabs %}
-        <li class="active"><a href="#">Upload .csv file</a></li>
-    </ul>
+        <h3>Create Experiment</h3>
     {% else %}
-        <h3>Edit Experiment</h3>
+        <h3>Edit {{form.instance}}</h3>
     {% endif %}
 
 
