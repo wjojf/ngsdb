@@ -12,4 +12,5 @@ urlpatterns = [
     path('create/', views.CreateExperimentView.as_view(), name='exp_upload_view'),
     path('update/', views.update_experiments,
         name='update-experiments'),
+    path('edit/<int:exp_id>', views.EditExperimentView.as_view(), name='edit-exp'),
 ]

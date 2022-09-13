@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from django.views.generic import list, edit
+from django.views.generic import list, edit, UpdateView
 from django.views.generic.base import TemplateResponseMixin
 from django.urls import reverse, reverse_lazy
 from django.http import HttpRequest
@@ -105,3 +105,15 @@ def update_experiments(request):
     ''''''
     refresh_experiments()
     return redirect('exp_home_view')
+
+
+class EditExperimentView(UpdateView):
+    model = Experiment
+    pk_url_kwarg = 'exp_id'
+    fields = ['project', 'platform', 'users', 'organism', 'prep_method']
+    template_name = 'exp/upload.html'
+    
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['edit_page'] = True
+        return context

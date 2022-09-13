@@ -1,10 +1,15 @@
 {% extends "exp/home.html" %}
 {% load common_tags exp_tags %}
 {% block content %} 
+    {% if not edit_page %}
     <ul class="nav nav-tabs">
         {% render_tabs %}
         <li class="active"><a href="#">Upload .csv file</a></li>
     </ul>
+    {% else %}
+        <h3>Edit Experiment</h3>
+    {% endif %}
+
 
     <form class="form-horizontal" action='.' method="post" enctype="multipart/form-data">{% csrf_token %}
         {% for field in form.hidden_fields %}{{ field }}{% endfor %}
@@ -24,16 +29,6 @@
         {% endfor %}
         
         {% submit_row %}
-    
-        <div class="accordion">
-            {% for object, custom_field_list in object_list %}
-                {% include 'exp/includes/imported.html' %}
-            {% endfor %}
-        </div>
-        
-        {% if object_list %}
-            {% submit_row %}
-        {% endif %}
     </form>
 {% endblock %}
 

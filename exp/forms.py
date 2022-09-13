@@ -6,11 +6,6 @@ from django.contrib.contenttypes.forms import BaseGenericInlineFormSet, generic_
 from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrganism, Descriptor, DescriptorMap
 
 
-class ImportForm(forms.Form):
-    ''''''
-    folder_url=forms.URLField(label=u'Google drive folder URL')
-
-
 class UploadForm(forms.Form):
     metadata_file = forms.FileField(label=u'Metadata File to import (.csv)')
     rawdata_file = forms.FileField(label=u'Raw data File to import (.csv)')
@@ -30,51 +25,6 @@ class UploadForm(forms.Form):
     users = forms.ModelMultipleChoiceField(label='Users',
             queryset=User.objects.all())
 
-class UpdateCustomForm(forms.Form):
-    '''
-    Descriptor name and descriptor value for updating MuseumItem
-    custom descriptors through admin actions.
-    '''
-    name = forms.ModelChoiceField(label=u'Descriptor name', queryset=Descriptor.objects.all())
-    value = forms.CharField(label=u'', max_length=255, required=False)
-
-class UpdateCommonForm(forms.Form):
-    '''
-    Field and value for bulk update Experiment from admin.
-    '''
-    field = forms.CharField(label=u'Field name', max_length=50)
-    value = forms.CharField(label=u'New Value', max_length=255)
-
-    def clean_field(self):
-        '''
-        Checks that the given field exists in Experiment.
-        '''
-        field_name = self.cleaned_data['field'].replace(' ', '_')
-        model_fields = Experiment._meta.get_all_field_names()
-        if field_name in model_fields:
-            return field_name
-        else:
-            raise forms.ValidationError('Unknown common field %s.' % field_name)
-
-    def clean(self):
-        '''
-        FIXME: Probably need a separate model for users, they are not
-        necessarily the same as auth.User
-        If the field is Experiment.author, performs lookup in the owners
-        table for value and if found, returns its pk, so we can use it
-        BulkUpdateView. Ugly, but working.
-        '''
-        cleaned_data = self.cleaned_data
-        field_name = cleaned_data.get('field')
-        if field_name == 'author':
-            author_name = cleaned_data.get('value')
-            try:
-                author = User.objects.get(name=author_name)
-                del(author)
-            except Exception:
-                raise forms.ValidationError('Owner with name %s does not exist.' % author_name)
-
-        return cleaned_data
 
 class PkToValueField(forms.CharField):
     '''
@@ -102,86 +52,6 @@ class DescriptorMapInlineForm(ModelForm):
         fields = '__all__'
         list_display = ('desc_name_value',)
    
-class BaseDescriptorFormSet(BaseGenericInlineFormSet):
-
-    def __init__(self, data=None, files=None, instance=None, save_as_new=None,
-             prefix=None, queryset=None, initial=None):
-        # Avoid a circular import.
-        from django.contrib.contenttypes.models import ContentType
-        opts = self.model._meta
-        self.instance = instance
-        self.can_delete = False
-        self.rel_name = '-'.join((
-                opts.app_label, opts.object_name.lower(),
-                self.ct_field.name, self.ct_fk_field.name,
-                ))
-        if self.instance is None or self.instance.pk is None:
-            qs = self.model._default_manager.none()
-        else:
-            if queryset is None:
-                queryset = self.model._default_manager
-            qs = queryset.filter(**{
-                    self.ct_field.name: ContentType.objects.get_for_model(self.instance),
-                    self.ct_fk_field.name: self.instance.pk,
-                    })
-        super(BaseGenericInlineFormSet, self).__init__(
-                queryset=qs, data=data, files=files,
-                prefix=prefix, initial=initial
-                )
-
-DescriptorFormSet = generic_inlineformset_factory(
-                                        DescriptorMap,
-                                        form=DescriptorMapInlineForm,
-                                        formset=BaseDescriptorFormSet
-                                        )
-
-class BaseUploadedFormSet(BaseModelFormSet):
-
-    def add_fields(self, form, index):
-        super(BaseUploadedFormSet, self).add_fields(form, index)
-        try:
-            instance = self.get_queryset()[index]
-            pk_value = instance.pk
-        except IndexError:
-            instance = None
-            pk_value = hash(form.prefix)
-        # Starting django 1.3 we can't pass {} to formset
-        # because it will raise ValidationError. Pass None instead.
-        if self.initial_extra:
-            initial = self.initial_extra[index]['inlines']
-        else:
-            initial = None
-        form.inlines = DescriptorFormSet(data=self.data or None,
-                                        instance=instance,
-                                        initial=initial, 
-                                        prefix='DESC_%s' % pk_value)
-
-    def is_valid(self):
-        result = super(BaseUploadedFormSet, self).is_valid()
-        for form in self.forms:
-            if hasattr(form, 'inlines'):
-                for inline in form.inlines:
-                    result = result and inline.is_valid()
-        return result
-
-    def save_new(self, form, commit=True):
-        instance = super(BaseUploadedFormSet, self).save_new(form, commit=commit)
-        form.inlines.instance = instance
-        form.inlines.save()
-        return instance
-
-    def save_all(self, commit=True):
-        objects = self.save(commit=False)
-        if commit:
-            for o in objects:
-                o.save()
-
-        if not commit:
-            self.save_m2m()
-
-        for form in set(self.initial_forms + self.saved_forms):
-            for inline in form.inlines:
-                inline.save(commit=commit)
 
 class ModelOrganismForm(ModelForm):
     
@@ -194,4 +64,5 @@ class ExpPlatformForm(ModelForm):
     class Meta:
         fields = '__all__'
         model = ExpPlatform
+
 
