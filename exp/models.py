@@ -142,6 +142,7 @@ def experiment_data_filepath(instance, filename):
 
 class Experiment(models.Model):
     
+    exp_directory = models.ForeignKey(HandledDirectory, on_delete=models.CASCADE, verbose_name='Experiment Directory', null=True)
     metadata_filepath = models.FileField(verbose_name='Metadata file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
     data_filepath = models.FileField(verbose_name='Results file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
     

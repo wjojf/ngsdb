@@ -53,7 +53,7 @@ status_desc_map, desc_map_created = DescriptorMap.objects.get_or_create(
     content_type=ContentType.objects.get_for_model(ModelOrganism),
     object_id=DEFAULT_MODEL_ORGANISM.id
 )
-    
+  
 
 ###################
 # Default Project #
@@ -159,7 +159,9 @@ def match_rna_folder(base_folder_filepath):
     return rna_folders
 
 
-def create_experiment_obj(directory_filepath, directory_files):
+def create_experiment_obj(directory_obj, directory_files):
+    
+    directory_filepath = NGS_LOCAL_FOLDER_FILEPATH / directory_obj.directory_name
     
     meta_file_dict = [
         file_dict 
@@ -184,6 +186,7 @@ def create_experiment_obj(directory_filepath, directory_files):
     )
 
     exp_obj = Experiment.objects.create(
+        exp_directory=directory_obj,
         metadata_filepath=meta_content_file,
         data_filepath=raw_content_file,
         project=DEFAULT_PROJECT,
@@ -226,12 +229,11 @@ def refresh_experiments():
                 directory_name=rna_folder        
         )
         valid_directory_files = filter_rna_folder(NGS_LOCAL_FOLDER_FILEPATH / rna_folder)
-        write_debug(f'{valid_directory_files}')
         # If New directory 
         if dir_created:
             # If both csv files found
             if bool(valid_directory_files):
-                create_experiment_obj(NGS_LOCAL_FOLDER_FILEPATH/rna_folder, valid_directory_files)
+                create_experiment_obj(handled_directory, valid_directory_files)
                 
             # Folder Invalid so directory is not handled
             else:

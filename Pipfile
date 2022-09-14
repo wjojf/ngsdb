@@ -17,6 +17,7 @@ django-filter = "*"
 ipython = "*"
 django-user-sessions = "*"
 python-dotenv = "*"
+future = "*"
 
 [dev-packages]
 
