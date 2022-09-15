@@ -1,6 +1,6 @@
 import django_filters
 from django.contrib.contenttypes.models import ContentType
-from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, ExpPlatform, Experiment, ModelOrganism, Project, Sample
+from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, ExpPlatform, Experiment, HandledDirectory, ModelOrganism, Project, Sample
 from django.contrib.auth.models import User
 
 
@@ -33,34 +33,46 @@ def get_condition_descriptors(n: int):
 
 class ExperimentFilter(django_filters.FilterSet):
     
-    experiment__project=django_filters.ModelChoiceFilter(
-        field_name='experiment__project',
-        queryset=Project.objects.all()
-    )
-    
-    experiment__platform=django_filters.ModelChoiceFilter(
-        field_name='experiment__platform',
-        queryset=ExpPlatform.objects.all()
+    experiment__exp_directory=django_filters.ModelChoiceFilter(
+        field_name='experiment__exp_directory',
+        queryset=HandledDirectory.objects.all(),
+        label='Directory'
     )
     
     experiment__users=django_filters.ModelChoiceFilter(
         field_name='experiment__users',
-        queryset=User.objects.all()
+        queryset=User.objects.all(),
+        label='Users'
     )
     
     experiment__organism=django_filters.ModelChoiceFilter(
         field_name='experiment__organism',
-        queryset=ModelOrganism.objects.all()
+        queryset=ModelOrganism.objects.all(),
+        label='Organism'
     )
-        
+    
+    experiment__project = django_filters.ModelChoiceFilter(
+        field_name='experiment__project',
+        queryset=Project.objects.all(),
+        label='Project'
+    )
+
+    experiment__platform = django_filters.ModelChoiceFilter(
+        field_name='experiment__platform',
+        queryset=ExpPlatform.objects.all(),
+        label='Platform'
+    )
+     
     condition_1 = django_filters.ModelChoiceFilter(
         field_name='conditions__descriptor_name_value',
-        queryset=get_condition_descriptors(1)
+        queryset=get_condition_descriptors(1),
+        label='Condition 1'
     )
     
     condition_2 = django_filters.ModelChoiceFilter(
         field_name='conditions__descriptor_name_value',
-        queryset=get_condition_descriptors(2)
+        queryset=get_condition_descriptors(2),
+        label='Condition 2'
     )
     
     

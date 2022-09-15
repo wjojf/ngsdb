@@ -11,7 +11,7 @@ from django.db.models import Q
 #####################
 
 class HandledDirectory(models.Model):
-    directory_name = models.CharField(verbose_name='Experiment Directory', max_length=200)
+    directory_name = models.CharField(verbose_name='Experiment Directory', max_length=200, unique=True)
     
     class Meta:
         verbose_name_plural = 'Handled Directories'

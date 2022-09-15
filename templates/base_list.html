@@ -15,6 +15,7 @@
                 <form class="search-form" action="." method="GET">
                     <div class="row">
                         {% for field in filter_obj.form %}
+                            <label class="control-label required" for="">{{field.label}}</label>
                             {{field}}
                         {% endfor %}
                         <div class="col-xs-2">
