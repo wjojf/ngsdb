@@ -1,11 +1,6 @@
+from plots import utils as plots_utils
 from django.views.generic import DetailView
-from ngsdb.settings import MEDIA_ROOT
 from exp.models import Experiment
-import plotly.express as px
-import numpy as np
-import pandas as pd
-import dash_bio
-import os 
 
 
 class VolcanoPlotView(DetailView):
@@ -19,20 +14,7 @@ class VolcanoPlotView(DetailView):
         context = super().get_context_data(**kwargs)
 
         try:
-            data_filepath = str(self.get_object().data_filepath)
-            df = pd.read_csv(os.path.join(MEDIA_ROOT, data_filepath)).dropna()
-
-            figure = dash_bio.VolcanoPlot(
-                dataframe=df,
-                effect_size='log2FoldChange',
-                p='pvalue',
-                snp=None,
-                gene='Gene',
-                title=f'{self.get_object()}'
-            )
-
-            context['graph'] = figure.to_html()
-        
+            context['graph'] = plots_utils.get_volcano_plot_for_obj(self.get_object())
         except Exception:
             pass 
         

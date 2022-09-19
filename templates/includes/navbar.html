@@ -35,9 +35,9 @@
         </ul>
         {% else %}
             <form class="navbar-form navbar-right" action="." method="post">{% csrf_token %}
-                </div>
-                    <a href="{% url 'login' %}">Login</a>
-                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                </ul>
             </form>
         {% endif %}
         </div>

@@ -48,7 +48,7 @@ footer a:hover {
 }
 
 form.search-form div {
-    padding: 8px 5px;
+    width: 100%;
 }
 
 .help-block {

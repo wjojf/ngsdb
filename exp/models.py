@@ -14,7 +14,7 @@ class HandledDirectory(models.Model):
     directory_name = models.CharField(verbose_name='Experiment Directory', max_length=200, unique=True)
     
     class Meta:
-        verbose_name_plural = 'Handled Directories'
+        verbose_name_plural = 'Experiment Directories'
     
     def __str__(self):
         return str(self.directory_name)

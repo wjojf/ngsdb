@@ -15,13 +15,13 @@
                 <form class="search-form" action="." method="GET">
                     <div class="row">
                         {% for field in filter_obj.form %}
-                            <label class="control-label required" for="">{{field.label}}</label>
+                            <label class="control-label" for="">{{field.label}}</label>
                             {{field}}
                         {% endfor %}
-                        <div class="col-xs-2">
-                            <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
-                            <button type="submit" class="btn" value="_clear" name="_clear">Clear</button>
-                        </div>
+                        
+                        <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
+                        <button type="submit" class="btn" value="_clear" name="_clear">Clear</button>
+                        
                     </div>
                 </form>
             {% endif %}

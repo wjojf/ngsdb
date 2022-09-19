@@ -102,7 +102,6 @@ class HomeView(list.ListView):
 
 
 def update_experiments(request):
-    ''''''
     refresh_experiments()
     return redirect('exp_home_view')
 
@@ -113,7 +112,20 @@ class EditExperimentView(UpdateView):
     fields = ['project', 'platform', 'users', 'organism', 'prep_method']
     template_name = 'exp/upload.html'
     
+    
+    def get_success_url(self):
+        return reverse('exp_home_view')
+   
+    
     def get_context_data(self, **kwargs):
         context =  super().get_context_data(**kwargs)
+        if self.request.method == 'GET':
+            context['submit_line'] = (
+                {'name': 'clear', 'class': 'btn-default', },
+                {'name': 'update', 'class': 'btn-success', },
+            )
         context['edit_page'] = True
         return context
+
+    
+    

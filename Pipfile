@@ -4,10 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-djangorestframework = "*"
-plotly = "*"
-django-extensions = "*"
+django = "4.1.1"
+plotly = "5.10.0"
+django-extensions = "3.2.1"
 psycopg2 = "*"
 matplotlib = "*"
 pandas = "*"
@@ -17,7 +16,7 @@ django-filter = "*"
 ipython = "*"
 django-user-sessions = "*"
 python-dotenv = "*"
-future = "*"
+
 
 [dev-packages]
 
