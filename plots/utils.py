@@ -33,8 +33,8 @@ def get_pca_df(csv_filepath):
     return pca_df
 
 
-def get_volcano_plot_for_obj(exp_obj):
-    data_filepath = str(exp_obj.data_filepath)
+def get_volcano_plot_for_obj(file_obj):
+    data_filepath = str(file_obj.file_instance)
     df = pd.read_csv(os.path.join(MEDIA_ROOT, data_filepath)).dropna()
 
     figure = dash_bio.VolcanoPlot(
@@ -43,7 +43,7 @@ def get_volcano_plot_for_obj(exp_obj):
         p='pvalue',
         snp=None,
         gene='Gene',
-        title=f'{exp_obj}'
+        title=f'{file_obj}'
     )
     
     return figure.to_html()

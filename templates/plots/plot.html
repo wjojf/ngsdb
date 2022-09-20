@@ -1,15 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {% if is_pca %}
-        {% include 'plots/pca_plot.html' %}    
-    {% else%}
-        {% if graph %}
-            {{graph|safe}}
-        {% else %}
-            <h1>No data Found</h1>
-            <a href="{% url 'exp_home_view'%}">Home</a>
-        {% endif %}
-    {% endif %}    
-
+    {% if graph %}
+        {{graph|safe}}
+    {% else %}
+        <h1>No data Found</h1>
+        <a href="{% url 'exp_home_view'%}">Home</a>
+    {% endif %}
 {%endblock content%}

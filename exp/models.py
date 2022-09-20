@@ -1,9 +1,8 @@
-from enum import unique
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
+import os
 
 
 #####################
@@ -137,14 +136,13 @@ class ModelOrganism(models.Model):
 def experiment_data_filepath(instance, filename):
     # file will be uploaded to MEDIA_ROOT/fileformat
     file_format = filename.split('.')[-1]
+    filename = os.path.basename(filename)
     return f'{file_format}/{filename}'
 
 
 class Experiment(models.Model):
     
     exp_directory = models.ForeignKey(HandledDirectory, on_delete=models.CASCADE, verbose_name='Experiment Directory', null=True)
-    metadata_filepath = models.FileField(verbose_name='Metadata file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
-    data_filepath = models.FileField(verbose_name='Results file', upload_to=experiment_data_filepath, null=False, default='Not Avaliable')
     
     project = models.ForeignKey(
         Project, null=True, on_delete=models.SET_NULL, verbose_name='Experiment Project')
@@ -178,3 +176,30 @@ class Sample(models.Model):
 
     def __str__(self):
         return f'{self.experiment} - {self.sample_value}'
+
+
+class ExperimentFile(models.Model):
+    TYPE_CHOICES = [ 
+        ('nextseq', 'NextSeq'),
+        ('deseq', 'Deseq'),
+        ('count_matrix', 'CountMatrix')
+    ]
+    
+    experiment = models.ForeignKey(Experiment, on_delete=models.CASCADE)
+    file_type = models.CharField(max_length=150,choices=TYPE_CHOICES, verbose_name='File Type')
+    file_instance = models.FileField(upload_to=experiment_data_filepath)
+    
+    @property
+    def is_nextseq(self):
+        return self.file_type == 'nextseq'
+    
+    @property
+    def is_deseq(self):
+        return self.file_type == 'deseq'
+    
+    @property
+    def is_count_matrix(self):
+        return self.file_type == 'count_matrix'
+    
+    def __str__(self):
+        return f'{self.file_type} - {self.experiment}'

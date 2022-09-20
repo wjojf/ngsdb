@@ -10,7 +10,7 @@ EXPERIMENT_DESCRIPTOR_COLUMNS = {
 }
 
 
-def load_df_from_content(content):
+def load_df(content):
 	df = pd.read_csv(content) 
 	if len(df.columns) <= 1:
 		df = pd.read_csv(content,sep=';')
@@ -111,9 +111,9 @@ def create_descriptors(df, sample_column, descriptor_column, exp_obj):
 #################
 
 
-def _parse_meta(content, exp_obj):
+def _parse_meta(filepath, exp_obj):
     
-	df = load_df_from_content(content)
+	df = load_df(filepath)
 	filtered_df = filter_df(df)
 	
 	if 'Sample' not in filtered_df.columns:
