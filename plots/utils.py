@@ -1,6 +1,7 @@
 from ngsdb.settings import MEDIA_ROOT
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA as sklearnPCA
+import plotly.express as px
 import pandas as pd
 import numpy as np
 import dash_bio
@@ -31,6 +32,24 @@ def get_pca_df(csv_filepath):
 
 
     return pca_df
+
+
+def get_pca_plot_for_obj(file_obj):
+    data_filepath = str(file_obj.file_instance)
+    
+    try:
+        pca_df = get_pca_df(os.path.join(MEDIA_ROOT, data_filepath)).dropna()
+    except:
+        return 
+
+    figure = px.scatter(
+        dataframe=pca_df,
+        x='PC1',
+        y='PC2',
+        color='condition'
+    )
+
+    return figure.to_html()
 
 
 def get_volcano_plot_for_obj(file_obj):

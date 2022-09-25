@@ -29,6 +29,6 @@ class PCAPlotView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_pca'] = True
+        context['figure'] = plots_utils.get_pca_plot_for_obj(self.get_object())
 
         return context
