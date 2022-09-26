@@ -57,19 +57,16 @@ class SampleAdmin(admin.ModelAdmin):
     model = exp_models.Sample
     inlines = [DescriptorMapInline] 
 
+class ExperimentFileInline(admin.TabularInline):
+    model = exp_models.ExperimentFile
+    classes = ['extrapretty', 'wide']
+    extra = 1
 
 class ExperimentAdmin(admin.ModelAdmin):
     model = exp_models.Experiment
-    inlines = [SampleInline]
+    inlines = [SampleInline, ExperimentFileInline]
     exclude = ['conditions', ]
     fieldsets = (
-        
-        ('Files', {
-            'classes': ['wide', 'extrapretty'],
-            'fields': ['metadata_filepath', 'data_filepath']
-            }
-        ),
-        
         ('Metadata', {
                 'classes': ['wide'],
                 'fields': ['users', 'project', 'platform', 'organism', 'prep_method']
