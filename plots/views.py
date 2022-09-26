@@ -7,8 +7,6 @@ class VolcanoPlotView(DetailView):
     template_name = 'plots/plot.html'
     pk_url_kwarg = 'file_id'
     model = ExperimentFile
-    context_object_name = 'exp'
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,10 +23,9 @@ class PCAPlotView(DetailView):
     template_name = 'plots/plot.html'
     pk_url_kwarg = 'file_id'
     model = ExperimentFile
-    context_object_name = 'exp'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['figure'] = plots_utils.get_pca_plot_for_obj(self.get_object())
+        context['graph'] = plots_utils.get_pca_plot_for_obj(self.get_object())
 
         return context

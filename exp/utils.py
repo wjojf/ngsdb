@@ -16,7 +16,7 @@ def write_debug(m):
 
 # TODO: Add Regex patterns
 RNA_SEQ_FOLDER_PATTERN = 'RNA-Seq'
-RAW_DATA_FILEPATH_PATTERN = 'AICAR.deseq.csv'
+RAW_DATA_FILEPATH_PATTERN = 'deseq.csv'
 META_DATA_FILEPATH_PATTERN = 'NextSeq.csv'
 COUNT_MATRIX_FILEPATH_PATTERN = 'count_matrix.csv'
 

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 import os
 
 
@@ -201,5 +202,12 @@ class ExperimentFile(models.Model):
     def is_count_matrix(self):
         return self.file_type == 'count_matrix'
     
+    def get_absolute_url(self):
+        if self.is_deseq:
+            return reverse('volcano-plot', kwargs={"file_id": self.id})
+        elif self.is_count_matrix:
+            return reverse('pca-plot', kwargs={"file_id": self.id})
+        return '/'
+
     def __str__(self):
         return f'{self.file_type} - {self.experiment}'

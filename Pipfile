@@ -17,6 +17,7 @@ ipython = "*"
 django-user-sessions = "*"
 python-dotenv = "*"
 scikit-learn = "*"
+plotly-express = "*"
 
 [dev-packages]
 

@@ -9,7 +9,6 @@ import csv
 import os 
 
 
-
 def load_df(csv_filepath):
     return pd.read_csv(csv_filepath, index_col=None, engine='python')
 
@@ -43,7 +42,7 @@ def get_pca_plot_for_obj(file_obj):
         return 
 
     figure = px.scatter(
-        dataframe=pca_df,
+        pca_df,
         x='PC1',
         y='PC2',
         color='condition'
