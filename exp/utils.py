@@ -19,11 +19,17 @@ RNA_SEQ_FOLDER_PATTERN = 'RNA-Seq'
 RAW_DATA_FILEPATH_PATTERN = 'deseq.csv'
 META_DATA_FILEPATH_PATTERN = 'NextSeq.csv'
 COUNT_MATRIX_FILEPATH_PATTERN = 'count_matrix.csv'
+RESULTS_FOLDER_NAME = 'results'
 
 
 #####################
 # DEFAULT INSTANCES #
 #####################
+
+DEFAULT_USER_OBJ, user_created = User.objects.get_or_create(
+    username='testuser',
+    password='12345'
+)
 
 DEFAULT_EXP_PLATFORM, platform_created = ExpPlatform.objects.get_or_create(
     title='Default Platform',
@@ -169,7 +175,7 @@ def filter_rna_folder(folder_name):
         return ()
     
     # Results folder should be in directory
-    if 'results' not in folder_files:
+    if RESULTS_FOLDER_NAME not in folder_files:
         return ()
     
     # Scan Top-level dir -> NextSeq file
@@ -227,6 +233,11 @@ def create_experiment_obj(directory_obj):
         organism=DEFAULT_MODEL_ORGANISM,
         prep_method=DEFAULT_PREP_METHOD
     )
+    exp_obj.users.set(
+        User.objects.in_bulk([
+            DEFAULT_USER_OBJ.id
+        ])
+    )   # Any other options don't work
     exp_obj.save()
     
     return exp_obj

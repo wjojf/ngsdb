@@ -1,11 +1,9 @@
 from django.shortcuts import redirect
 from django.views.generic import list, edit, UpdateView
 from django.views.generic.base import TemplateResponseMixin
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.http import HttpRequest
-from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LoginView
 from nlib.utils import build_tabs_dict
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample
 from exp.forms import UploadForm
@@ -18,15 +16,6 @@ EXP_TAB = {
     'Experiments': 'exp_home_view',
     'Create': 'exp_upload_view',
 }
-
-
-def logout_user(request):
-    logout(request)
-    return redirect('exp_home_view')
-
-
-class MyLoginView(LoginView):
-    template_name = 'login.html'
 
 
 class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
