@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 
 DEFAULT_PASSWORD = '12345'
+# Put your users here
 USERS = [
     {'username': 'testuser', 'password': DEFAULT_PASSWORD}
 ]
@@ -18,6 +19,7 @@ class Command(BaseCommand):
                 username=user_dict['username'],
                 password=user_dict['password']
             )
-            print(f'User {user_obj} created')
+            if created:
+                print(f'User {user_obj} created')
             user_obj.save()
     

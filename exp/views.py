@@ -10,6 +10,7 @@ from exp.forms import UploadForm
 from exp.filters import ExperimentFilter
 from exp.utils import refresh_experiments
 import exp.parse_meta as exp_meta
+from exp.utils import DEFAULT_DIRECTORY_OBJ
 
 
 EXP_TAB = {
@@ -40,6 +41,7 @@ class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
     def post(self, request: HttpRequest, *args, **kwargs):
         
         exp_obj = Experiment.objects.create(
+            exp_directory=DEFAULT_DIRECTORY_OBJ,
             metadata_filepath=request.FILES['metadata_file'],
             data_filepath=request.FILES['rawdata_file'],
             project=Project.objects.filter(pk=request.POST['project'])[0],

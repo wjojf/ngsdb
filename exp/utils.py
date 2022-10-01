@@ -26,6 +26,10 @@ RESULTS_FOLDER_NAME = 'results'
 # DEFAULT INSTANCES #
 #####################
 
+DEFAULT_DIRECTORY_OBJ, directory_created  = HandledDirectory.objects.get_or_create(
+    directory_name='Default-RNA-Seq'
+)
+
 DEFAULT_USER_OBJ, user_created = User.objects.get_or_create(
     username='testuser',
     password='12345'

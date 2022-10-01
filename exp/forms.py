@@ -7,6 +7,7 @@ from exp.models import Experiment, PrepMethod, Project, ExpPlatform, ModelOrgani
 
 
 class UploadForm(forms.Form):
+
     metadata_file = forms.FileField(label=u'Metadata File to import (.csv)')
     rawdata_file = forms.FileField(label=u'Raw data File to import (.csv)')
     
