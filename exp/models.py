@@ -1,9 +1,10 @@
-from enum import unique
 from django.db import models
+from django.db.models.signals import post_delete
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
+from exp.singals_utils import file_cleanup
 import os
 
 
@@ -212,3 +213,5 @@ class ExperimentFile(models.Model):
 
     def __str__(self):
         return f'{self.file_type} - {self.experiment}'
+
+post_delete.connect(file_cleanup, sender=ExperimentFile, dispatch_uid="ExperimentFile.file_cleanup")
