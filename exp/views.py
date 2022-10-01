@@ -1,16 +1,18 @@
-from django.shortcuts import redirect
-from django.views.generic import list, edit, UpdateView
 from django.views.generic.base import TemplateResponseMixin
-from django.urls import reverse
-from django.http import HttpRequest
+from django.views.generic import list, edit, UpdateView, DeleteView
 from django.contrib.auth.models import User
-from nlib.utils import build_tabs_dict
+from django.shortcuts import redirect
+from django.http import HttpRequest
+from django.urls import reverse, reverse_lazy
+
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample, ExperimentFile
-from exp.forms import UploadForm
-from exp.filters import ExperimentFilter
-from exp.utils import ExperimentFileHandler, FileType, NextSeqFileHandler, refresh_experiments
-import exp.parse_meta as exp_meta
+from exp.file_handlers import ExperimentFileHandler, FileType, NextSeqFileHandler
 from exp.utils import DEFAULT_DIRECTORY_OBJ
+from exp.utils import refresh_experiments
+from exp.filters import ExperimentFilter
+from exp.forms import UploadForm
+
+from nlib.utils import build_tabs_dict
 
 
 EXP_TAB = {
@@ -64,6 +66,12 @@ class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
         return redirect('exp_home_view')
    
 ##########################################################################
+
+class DeleteExperimentView(DeleteView):
+    model = Experiment
+    pk_url_kwarg = 'exp_id'
+    template_name = 'delete.html'
+    success_url = reverse_lazy('exp_home_view')
 
 ##########################################################################
 

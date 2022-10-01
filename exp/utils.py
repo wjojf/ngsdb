@@ -1,12 +1,10 @@
-from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, DescriptorValue, ExperimentFile, HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
+from asyncore import write
+from exp.models import Descriptor, DescriptorMap, DescriptorNameValue, DescriptorValue, HandledDirectory, Experiment, ExpPlatform, ModelOrganism, Project, PrepMethod
 from django.contrib.contenttypes.models import ContentType
 from ngsdb.settings import NGS_LOCAL_FOLDER_FILEPATH
-from django.core.files.base import  ContentFile
 from django.contrib.auth.models import User
-from exp.parse_meta import _parse_meta
-from enum import Enum
+from exp.file_handlers import FileType, ExperimentFileHandler, NextSeqFileHandler
 import os 
-import gc
 
 
 def write_debug(m):
@@ -104,12 +102,6 @@ def validate_folder(folder_name: str):
 # File validating Functions #
 #############################
 
-class FileType(Enum):
-    NEXTSEQ = 'nextseq'
-    DESEQ = 'deseq'
-    COUNT_MATRIX = 'count_matrix'
-
-
 def filtered_files_valid(files_list):
     '''Checks if files in a list are all complete for creating 
         an Experiment obj 
@@ -203,48 +195,6 @@ def filter_rna_folder(folder_name):
 # Creating & handling Experiment object #
 #########################################
 
-class ExperimentFileHandler:
-    
-    @staticmethod 
-    def create_from_file_instance(file_instance, exp_obj, filetype):
-        exp_file_obj = ExperimentFile.objects.create(
-            experiment=exp_obj,
-            file_type=filetype,
-            file_instance =file_instance
-        )
-        
-        exp_file_obj.save()
-    
-    @staticmethod
-    def create_from_file_dict(exp_obj, filetype, file_dict):
-        content_file = ContentFile(
-            open(file_dict['filename']).read(),
-            file_dict['filename']
-        )
-        
-        ExperimentFileHandler.create_from_file_instance(
-            content_file, exp_obj, filetype
-        )
-
-
-class NextSeqFileHandler(ExperimentFileHandler):
-
-    @staticmethod
-    def create_from_file_instance(file_instance, exp_obj, filetype=FileType.NEXTSEQ.value):
-        _parse_meta(file_instance.open(), exp_obj)
-        ExperimentFileHandler.create_from_file_instance(file_instance, exp_obj, filetype)
-    
-    @staticmethod
-    def create_from_file_dict(exp_obj, file_dict, filetype=FileType.NEXTSEQ.value):
-        content_file = ContentFile(
-            open(file_dict['filename']).read(),
-            file_dict['filename']
-        )
-        _parse_meta(content_file, exp_obj)
-        ExperimentFileHandler.create_from_file_dict(exp_obj, filetype, file_dict)
-
-
-
 def create_experiment_obj(directory_obj):
     
     exp_obj = Experiment.objects.create(
@@ -272,7 +222,6 @@ def create_experiment_files(exp_obj, directory_files):
         file_dict 
         for file_dict in directory_files
         if file_dict['type'] == FileType.NEXTSEQ][0]
-    
     NextSeqFileHandler.create_from_file_dict(
         exp_obj,
         nextseq_file_dict
