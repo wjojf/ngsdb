@@ -6,10 +6,11 @@ from exp.forms import DescriptorMapInlineForm
 
 # Experiment models 
 admin.site.register(exp_models.HandledDirectory)
+admin.site.register(exp_models.ExperimentFile)
 admin.site.register(exp_models.ExpPlatform)
 admin.site.register(exp_models.Project)
 admin.site.register(exp_models.PrepMethod)
-admin.site.register(exp_models.ExperimentFile)
+
 
 
 # EAV Concept Models

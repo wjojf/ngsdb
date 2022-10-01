@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.http import HttpRequest
 from django.urls import reverse, reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample, ExperimentFile
 from exp.file_handlers import ExperimentFileHandler, FileType, NextSeqFileHandler
@@ -21,10 +22,11 @@ EXP_TAB = {
 }
 
 
-class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
+class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin, LoginRequiredMixin):
  
     template_name = 'exp/upload.html'
     form_class = UploadForm
+    login_url = reverse_lazy('login')
 
 
     def get_context_data(self, **kwargs):
@@ -67,20 +69,22 @@ class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
    
 ##########################################################################
 
-class DeleteExperimentView(DeleteView):
+class DeleteExperimentView(LoginRequiredMixin, DeleteView):
     model = Experiment
     pk_url_kwarg = 'exp_id'
     template_name = 'delete.html'
     success_url = reverse_lazy('exp_home_view')
+    login_url = reverse_lazy('login')
 
 ##########################################################################
 
 
-class HomeView(list.ListView):
+class HomeView(LoginRequiredMixin, list.ListView):
     
     model = Experiment
     template_name = 'exp/home.html'
     filterset_class = ExperimentFilter
+    login_url = reverse_lazy('login')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -106,13 +110,14 @@ def update_experiments(request):
     return redirect('exp_home_view')
 
 
-class EditExperimentView(UpdateView):
+class EditExperimentView(LoginRequiredMixin, UpdateView):
     model = Experiment
     pk_url_kwarg = 'exp_id'
     fields = ['project', 'platform', 'users', 'organism', 'prep_method']
     template_name = 'exp/upload.html'
+    login_url = reverse_lazy('login')
     
-    
+
     def get_success_url(self):
         return reverse('exp_home_view')
    

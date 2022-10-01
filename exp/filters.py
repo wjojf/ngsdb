@@ -51,17 +51,17 @@ class ExperimentFilter(django_filters.FilterSet):
         label='Organism'
     )
     
-    experiment__project = django_filters.ModelChoiceFilter(
-        field_name='experiment__project',
-        queryset=Project.objects.all(),
-        label='Project'
-    )
+    # experiment__project = django_filters.ModelChoiceFilter(
+    #     field_name='experiment__project',
+    #     queryset=Project.objects.all(),
+    #     label='Project'
+    # )
 
-    experiment__platform = django_filters.ModelChoiceFilter(
-        field_name='experiment__platform',
-        queryset=ExpPlatform.objects.all(),
-        label='Platform'
-    )
+    # experiment__platform = django_filters.ModelChoiceFilter(
+    #     field_name='experiment__platform',
+    #     queryset=ExpPlatform.objects.all(),
+    #     label='Platform'
+    # )
      
     condition_1 = django_filters.ModelChoiceFilter(
         field_name='conditions__descriptor_name_value',

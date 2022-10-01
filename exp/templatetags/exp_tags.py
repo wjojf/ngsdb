@@ -14,7 +14,7 @@ def plots_dropdown(context, obj):
     if not bool(obj_files):
         return mark_safe('')
 
-    output = ['<li class="dropdown right">']
+    output = ['<li class="dropdown navbar-right">']
     
     title_href = '''<a href="" class="dropdown-toggle" data-toggle="dropdown">
                         Plots
@@ -29,7 +29,6 @@ def plots_dropdown(context, obj):
         
         if obj_file.is_nextseq:
             continue
-
         elif obj_file.is_deseq:
             text = 'Volcano Plot'
         elif obj_file.is_count_matrix:

@@ -4532,7 +4532,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   margin-top: 14px;
   margin-bottom: 14px;
 }
-.navbar-text {
+.navbar-text {navbar-right
   margin-top: 15px;
   margin-bottom: 15px;
 }
