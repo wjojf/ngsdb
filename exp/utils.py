@@ -204,28 +204,45 @@ def filter_rna_folder(folder_name):
 #########################################
 
 class ExperimentFileHandler:
+    
+    @staticmethod 
+    def create_from_file_instance(file_instance, exp_obj, filetype):
+        exp_file_obj = ExperimentFile.objects.create(
+            experiment=exp_obj,
+            file_type=filetype,
+            file_instance =file_instance
+        )
+        
+        exp_file_obj.save()
+    
     @staticmethod
-    def create(exp_obj, filetype, file_dict):
+    def create_from_file_dict(exp_obj, filetype, file_dict):
         content_file = ContentFile(
             open(file_dict['filename']).read(),
             file_dict['filename']
         )
         
-        exp_file_obj = ExperimentFile.objects.create(
-            experiment=exp_obj,
-            file_type=filetype,
-            file_instance = content_file
+        ExperimentFileHandler.create_from_file_instance(
+            content_file, exp_obj, filetype
         )
-        
-        exp_file_obj.save()
-
 
 
 class NextSeqFileHandler(ExperimentFileHandler):
+
     @staticmethod
-    def create(exp_obj, filetype, file_dict):
-        _parse_meta(file_dict['filename'], exp_obj)
-        ExperimentFileHandler.create(exp_obj, filetype, file_dict)
+    def create_from_file_instance(file_instance, exp_obj, filetype=FileType.NEXTSEQ.value):
+        _parse_meta(file_instance.open(), exp_obj)
+        ExperimentFileHandler.create_from_file_instance(file_instance, exp_obj, filetype)
+    
+    @staticmethod
+    def create_from_file_dict(exp_obj, file_dict, filetype=FileType.NEXTSEQ.value):
+        content_file = ContentFile(
+            open(file_dict['filename']).read(),
+            file_dict['filename']
+        )
+        _parse_meta(content_file, exp_obj)
+        ExperimentFileHandler.create_from_file_dict(exp_obj, filetype, file_dict)
+
 
 
 def create_experiment_obj(directory_obj):
@@ -256,9 +273,8 @@ def create_experiment_files(exp_obj, directory_files):
         for file_dict in directory_files
         if file_dict['type'] == FileType.NEXTSEQ][0]
     
-    NextSeqFileHandler.create(
+    NextSeqFileHandler.create_from_file_dict(
         exp_obj,
-        FileType.NEXTSEQ.value,
         nextseq_file_dict
     )
     
@@ -270,7 +286,7 @@ def create_experiment_files(exp_obj, directory_files):
         if file_dict['type'] == FileType.DESEQ
     ]
     for deseq_file_dict in deseq_files_dicts:
-        ExperimentFileHandler.create(
+        ExperimentFileHandler.create_from_file_dict(
             exp_obj,
             FileType.DESEQ.value,
             deseq_file_dict
@@ -285,7 +301,7 @@ def create_experiment_files(exp_obj, directory_files):
     ]
 
     for count_matrix_file_dict in count_matrix_files_dicts:
-        ExperimentFileHandler.create(
+        ExperimentFileHandler.create_from_file_dict(
             exp_obj,
             FileType.COUNT_MATRIX.value,
             count_matrix_file_dict

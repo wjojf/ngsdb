@@ -45,7 +45,8 @@ def get_pca_plot_for_obj(file_obj):
         pca_df,
         x='PC1',
         y='PC2',
-        color='condition'
+        color='condition',
+        title=f'{file_obj} - {file_obj.file_instance}'
     )
 
     return figure.to_html()
@@ -61,7 +62,7 @@ def get_volcano_plot_for_obj(file_obj):
         p='pvalue',
         snp=None,
         gene='Gene',
-        title=f'{file_obj}'
+        title=f'{file_obj} - {file_obj.file_instance.name}'
     )
     
     return figure.to_html()

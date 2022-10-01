@@ -5,10 +5,10 @@ from django.urls import reverse
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 from nlib.utils import build_tabs_dict
-from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample
+from exp.models import Experiment, ModelOrganism, Project, PrepMethod, ExpPlatform, Sample, ExperimentFile
 from exp.forms import UploadForm
 from exp.filters import ExperimentFilter
-from exp.utils import refresh_experiments
+from exp.utils import ExperimentFileHandler, FileType, NextSeqFileHandler, refresh_experiments
 import exp.parse_meta as exp_meta
 from exp.utils import DEFAULT_DIRECTORY_OBJ
 
@@ -42,8 +42,6 @@ class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
         
         exp_obj = Experiment.objects.create(
             exp_directory=DEFAULT_DIRECTORY_OBJ,
-            metadata_filepath=request.FILES['metadata_file'],
-            data_filepath=request.FILES['rawdata_file'],
             project=Project.objects.filter(pk=request.POST['project'])[0],
             organism=ModelOrganism.objects.filter(pk=request.POST['organism'])[0],
             platform=ExpPlatform.objects.filter(pk=request.POST['platform'])[0],
@@ -56,10 +54,13 @@ class CreateExperimentView(edit.BaseFormView, TemplateResponseMixin):
         )   # Any other options don't work
 
         files = request.FILES
-        metadata_content = files['metadata_file'].open()
 
-        exp_meta._parse_meta(metadata_content, exp_obj)
-        
+        metadata_file = files['metadata_file']
+        NextSeqFileHandler.create_from_file_instance(metadata_file, exp_obj)
+
+        rawdata_file = files['rawdata_file']
+        ExperimentFileHandler.create_from_file_instance(rawdata_file, exp_obj, FileType.DESEQ.value)
+
         return redirect('exp_home_view')
    
 ##########################################################################
