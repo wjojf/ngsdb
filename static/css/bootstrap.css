@@ -2271,8 +2271,8 @@ table {
   background-color: transparent;
 }
 
-td{
-  text-align: center;
+td, th{
+  text-align: left;
 }
 
 caption {
@@ -2281,11 +2281,6 @@ caption {
   color: #777777;
   text-align: left;
 }
-
-th {
-  text-align: center;
-}
-
 .table {
   width: 100%;
   max-width: 100%;
