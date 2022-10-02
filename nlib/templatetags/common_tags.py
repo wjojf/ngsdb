@@ -56,7 +56,7 @@ def render_obj(context, obj, css_class='order-fieldset', tag='p'):
         if not bool(samples_queryset):
             return ''
         
-        output = '<table>'
+        output = '<table class=table-bordered>'
         
         # Add Column Names
         output += '<tr><th>Sample ID</th><th>Condition 1</th><th>Condition 2</th></tr>'

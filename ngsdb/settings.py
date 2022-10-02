@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_extensions',
     'django_filters',
+    'widget_tweaks',
 
     'nlib',
     'exp',

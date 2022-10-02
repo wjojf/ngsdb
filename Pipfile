@@ -18,6 +18,7 @@ django-user-sessions = "*"
 python-dotenv = "*"
 scikit-learn = "*"
 plotly-express = "*"
+django-widget-tweaks = "*"
 
 [dev-packages]
 

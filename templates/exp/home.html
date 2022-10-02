@@ -13,11 +13,12 @@
                 {% render_obj_users obj %}
             </div>
         </div>
+        {% plots_dropdown obj %}
         <h4>
             {{ obj }}
             <a href="{% url 'edit-exp' obj.id %}">Edit</a>
             <a href="{% url 'delete-exp' obj.id %}">Delete</a>
-            {% plots_dropdown obj %}
+            
         </h4>
         <div class="item-details">
             {% render_obj obj css_class='item-fieldset' %}

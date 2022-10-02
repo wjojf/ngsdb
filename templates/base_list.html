@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load common_tags %}
+{% load widget_tweaks %}
 {% block navigation %}
     {% include "includes/navbar.html" %}
 {% endblock %}
@@ -14,14 +15,18 @@
             {% if filter_obj.form %}
                 <form class="search-form" action="." method="GET">
                     <div class="row">
-                        {% for field in filter_obj.form %}
-                            <label class="control-label" for="">{{field.label}}</label>
-                            {{field}}
-                        {% endfor %}
-                        
-                        <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
-                        <button type="submit" class="btn" value="_clear" name="_clear">Clear</button>
-                        
+                        <div class="col-xs-7">
+                            {% for field in filter_obj.form %}  
+                                <div class="col">
+                                    <label class="control-label" for="">{{field.label}}</label>
+                                    {% render_field field class='form-control' %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-xs-2">
+                            <button type="submit" class="btn btn-info" value="_filter" name="_filter">Filter</button>
+                            <button type="submit" class="btn" value="_clear" name="_clear">Clear</button> 
+                        </div> 
                     </div>
                 </form>
             {% endif %}

@@ -2,6 +2,7 @@ import os
 from django.core.files.storage import default_storage
 from django.db.models import FileField
 
+
 def file_cleanup(sender, **kwargs):
     """
     File cleanup callback used to emulate the old delete
@@ -33,3 +34,14 @@ def file_cleanup(sender, **kwargs):
                 default_storage.delete(f.path)
             except:
                 pass
+
+
+def exp_directory_cleanup(sender, **kwargs):
+
+    try:
+        exp_directory_obj = kwargs['instance'].exp_directory
+        exp_directory_obj.delete()
+    except Exception as e:
+        with open('debug.txt', 'a') as f:
+            f.write(f'[ERROR] when deleting {kwargs["instance"]} -> {e}' + '\n')
+        return 

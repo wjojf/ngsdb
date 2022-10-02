@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericRelation, GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
-from exp.singals_utils import file_cleanup
+from exp.singals_utils import file_cleanup, exp_directory_cleanup
 import os
 
 
@@ -165,6 +165,11 @@ class Experiment(models.Model):
     def __str__(self):
         return f'Experiment {self.id}'
 
+post_delete.connect(
+    exp_directory_cleanup,
+    sender=Experiment,
+    dispatch_uid="Experiment.exp_directory_cleanup"
+)
 
 ################
 # Sample model #

@@ -42,7 +42,7 @@ class ExperimentFilter(django_filters.FilterSet):
     experiment__users=django_filters.ModelChoiceFilter(
         field_name='experiment__users',
         queryset=User.objects.all(),
-        label='Users'
+        label='User'
     )
     
     experiment__organism=django_filters.ModelChoiceFilter(
@@ -51,17 +51,17 @@ class ExperimentFilter(django_filters.FilterSet):
         label='Organism'
     )
     
-    # experiment__project = django_filters.ModelChoiceFilter(
-    #     field_name='experiment__project',
-    #     queryset=Project.objects.all(),
-    #     label='Project'
-    # )
+    experiment__project = django_filters.ModelChoiceFilter(
+        field_name='experiment__project',
+        queryset=Project.objects.all(),
+        label='Project'
+    )
 
-    # experiment__platform = django_filters.ModelChoiceFilter(
-    #     field_name='experiment__platform',
-    #     queryset=ExpPlatform.objects.all(),
-    #     label='Platform'
-    # )
+    experiment__platform = django_filters.ModelChoiceFilter(
+        field_name='experiment__platform',
+        queryset=ExpPlatform.objects.all(),
+        label='Platform'
+    )
      
     condition_1 = django_filters.ModelChoiceFilter(
         field_name='conditions__descriptor_name_value',
@@ -80,4 +80,13 @@ class ExperimentFilter(django_filters.FilterSet):
     class Meta:
         model = Sample 
         exclude = ['experiment', 'sample_value']
-        
+    
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data, queryset, request=request, prefix=prefix)
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})
+        # self.filters['direction'].field.widget.attrs.update({'class': 'custom-select'})

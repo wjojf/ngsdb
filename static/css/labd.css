@@ -61,6 +61,7 @@ form.search-form div {
     margin: 0px 10px 10px 0;
     background: #eee8d5;
     padding: 4px 7px 6px 0px;
+    margin-right: 15px;
     }
 
 span.error { color: #cb4b16; }

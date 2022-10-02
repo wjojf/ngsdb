@@ -18,7 +18,6 @@ def plots_dropdown(context, obj):
     
     title_href = '''<a href="" class="dropdown-toggle" data-toggle="dropdown">
                         Plots
-                        <b class="caret"></b>
                    </a>'''
     output.append(title_href)
 
