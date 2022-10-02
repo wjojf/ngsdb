@@ -14,7 +14,7 @@ def plots_dropdown(context, obj):
     if not bool(obj_files):
         return mark_safe('')
 
-    output = ['<li class="dropdown navbar-right">']
+    output = ['<li class="dropdown plots-right">']
     
     title_href = '''<a href="" class="dropdown-toggle" data-toggle="dropdown">
                         Plots
