@@ -12,3 +12,6 @@ NGS experiments aggregator.
 5. dash-bio
 6. plotly
 
+
+# Detail description comming soon!
+
