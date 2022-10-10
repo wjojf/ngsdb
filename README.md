@@ -48,6 +48,6 @@ Once you have updated all of your local credentials, you should migrate the data
 
    - run `python manage.py migrate` in your shell
 
-3. Run the server 
+### 3. Run the server 
 
    - run `python manage.py runserver` in your shell
