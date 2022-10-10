@@ -51,3 +51,8 @@ Once you have updated all of your local credentials, you should migrate the data
 ### 3. Run the server 
 
    - run `python manage.py runserver` in your shell
+
+
+# Documentation
+
+### Coming soon
