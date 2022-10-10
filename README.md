@@ -1,6 +1,4 @@
-# ngsdb
-
-NGS experiments aggregator.
+# Welcome to NGSDB - NGS experiments aggregator!
 
 NGSDB is a web-based viewer that allows to aggregate, annotate and
 organize metadata and results of high-throughput sequencing
