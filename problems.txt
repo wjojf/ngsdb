@@ -1,2 +1,0 @@
-1) When you manually delete exp obj, directory obj still exists
-2) Password change form error -> wrong login & password combination
