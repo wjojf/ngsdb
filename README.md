@@ -72,6 +72,9 @@ Once you have updated all of your local credentials, you should migrate the data
       ![Create img](./static/img/readme/ngsdb_create.png)
       - MetaData file: .csv file containing `Sample`, `Condition`, `Condition2`[Optional] columns 
       - RawData file: deseq.csv file containg `log2FoldChange`, `pvalue` columns
+      - Project: Experiment Project 
+      - Platorm: Experiment Platform
+      - Users: Experiment Users
    
 
 
