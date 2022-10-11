@@ -59,9 +59,20 @@ Once you have updated all of your local credentials, you should migrate the data
    - There are some custom shell commands written in `exp.management.commands` folder. You can call one with `python manage.py 'filename'` (`python manage.py createusers` f.e)
  
 
-# How to use
+# Overview & tutorial
 
-   ![Alt text](./static/img/readme/ngsdb_home.png)
+   ![HomePage img](./static/img/readme/ngsdb_home.png)
+   
+### As a NGSDB user you can:
+   1. Browse & filter created experiments using filterbar 
+      - Browse the data using plots dropdown (top right corner of each experiment card)
+      - Browse individual conditions of each experiment (Table)
+      - Edit experiment metadata (edit link)
+   2. Create your own experiments 
+      ![Create img](./static/img/readme/ngsdb_create.png)
+      - MetaData file: .csv file containing `Sample`, `Condition`, `Condition2`[Optional] columns 
+      - RawData file: deseq.csv file containg `log2FoldChange`, `pvalue` columns
+   
 
 
 
