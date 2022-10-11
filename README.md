@@ -1,5 +1,6 @@
 # Welcome to NGSDB - NGS experiments aggregator!
 
+
 NGSDB is a web-based viewer that allows to aggregate, annotate and
 organize metadata and results of high-throughput sequencing
 experiments. It is geared towards a small to medium size research lab
@@ -40,17 +41,27 @@ volcano plot for differential gene expression.
 
    - In `ngsdb.setting.py` change `NGS_LOCAL_FOLDER_FILEPATH` to whatever your local folder is using os module filepath system
 
+
 ### 2. Migrations 
 
 Once you have updated all of your local credentials, you should migrate the database
 
    - run `python manage.py migrate` in your shell
 
+
 ### 3. Run the server 
 
    - run `python manage.py runserver` in your shell
 
 
-# Documentation
+### 4. Aditional 
 
-### Coming soon
+   - There are some custom shell commands written in `exp.management.commands` folder. You can call one with `python manage.py 'filename'` (`python manage.py createusers` f.e)
+ 
+
+# How to use
+
+   ![Alt text](./static/img/readme/ngsdb_home.png)
+
+
+
