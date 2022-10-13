@@ -1,4 +1,3 @@
-from attr import has
 from django import template
 from django.apps import apps
 from django.urls import reverse
