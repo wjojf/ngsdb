@@ -35,7 +35,7 @@ volcano plot for differential gene expression.
 # Quick Start 
 ### 1. Preparation
 
-   - Start your virtual enviroment and export your "SECRET_KEY" to variable `DJANGO_SECRET_KEY` and then store it to the .env file (or manually add it to `ngsdb.settings.py`)
+   - Start your virtual enviroment and export your "SECRET_KEY" to variable `DJANGO_SECRET_KEY` (or manually add it to `ngsdb.settings.py`)
 
    - Create file `local_settings.py` if you want to change something locally (DATABASES dict f.e)
 
